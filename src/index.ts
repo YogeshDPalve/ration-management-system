@@ -17,9 +17,11 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(cookieParser());
 
+// importing some data from .env file
 const port = process.env.PORT;
 const server_url = process.env.SERVER_URL as string;
 const mode = process.env.DEVELOPMENT_MODE;
+
 app.listen(port, () => {
   console.log(
     chalk.underline.blue(
