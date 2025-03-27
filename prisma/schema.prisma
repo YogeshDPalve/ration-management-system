@@ -22,8 +22,7 @@ model User {
   mobileNo            String
   email               String          @unique
   Address             String
-  totalFamilyMembers  Int
-  password            String?
+  password            String
   fairPriceShopNumber Int
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
