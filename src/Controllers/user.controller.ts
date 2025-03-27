@@ -1,13 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import { CheckRegReqBody } from "../Constants/interfaces";
 
 // prisma initiation
 const prisma = new PrismaClient();
 
 // register user controller
-const registerUser = async (req: Request, res: Response): Response<unknown> => {
-  try {
+const registerUser = async (req: Request, res: Response): Promise<any> => {
+	try {
+	  console.log('from controller : req.body->',req.body)
     const {
       rationId, // primary
       adharcardNumber, //unique
@@ -16,14 +18,16 @@ const registerUser = async (req: Request, res: Response): Response<unknown> => {
       lastName,
       mobileNo, //unique
       email,
-      Address,
+      address,
+      fairPriceShopNumber,
       password,
-    } = req.body;
+    }: CheckRegReqBody = req.body;
 
     const salt: string = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword: string = await bcrypt.hash(password, salt);
 
-    const user = await prisma.user.create({
+	  const user = await prisma.user.create({
+
       data: {
         rationId,
         adharcardNumber,
@@ -32,9 +36,16 @@ const registerUser = async (req: Request, res: Response): Response<unknown> => {
         lastName,
         mobileNo,
         email,
-        Address,
-        password,
+        address,
+        password: hashedPassword,
+        fairPriceShopNumber,
       },
+    });
+
+    return res.status(200).send({
+      success: true,
+      message: "User created successfully.",
+      user,
     });
   } catch (error) {
     return res.status(500).send({
@@ -44,6 +55,7 @@ const registerUser = async (req: Request, res: Response): Response<unknown> => {
     });
   }
 };
+
 // login user controller
 const loginUser = () => {};
 export { registerUser, loginUser };

@@ -34,11 +34,7 @@ export const registerValidation = [
 
   body("email").isEmail().withMessage("Invalid email format"),
 
-  body("Address").isString().notEmpty().withMessage("Address is required"),
-
-  body("totalFamilyMembers")
-    .isInt({ min: 1 })
-    .withMessage("Total family members must be at least 1"),
+  body("address").isString().notEmpty().withMessage("Address is required"),
 
   body("password")
     .optional()
@@ -59,5 +55,7 @@ export const registerValidation = [
         errors: errors.array(),
       });
     }
+    console.log("fromo validation middleware");
+    next();
   },
 ];

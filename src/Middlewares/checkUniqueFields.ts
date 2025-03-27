@@ -11,6 +11,7 @@ const checkUnique = async (
   res: Response,
   next: NextFunction
 ): Promise<any> => {
+  console.log("from unique fields middleare");
   const { rationId, adharcardNumber, email } = req.body;
 
   //   check if User exists
