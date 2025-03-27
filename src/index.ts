@@ -28,7 +28,7 @@ const mode = process.env.DEVELOPMENT_MODE;
 
 app.listen(port, () => {
   console.log(
-    chalk.underline.blue(
+    chalk.bold.bgBlue.white(
       `server running on ${server_url}${port} in ${mode} mode.`
     )
   );

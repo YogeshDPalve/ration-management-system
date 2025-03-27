@@ -11,4 +11,8 @@ interface CheckRegReqBody {
   password: string;
 }
 
-export { CheckRegReqBody };
+interface CheckLoginReqBody {
+  rationId: string;
+  password: string;
+}
+export { CheckRegReqBody, CheckLoginReqBody };

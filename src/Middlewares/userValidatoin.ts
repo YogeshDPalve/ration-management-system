@@ -55,7 +55,30 @@ export const registerValidation = [
         errors: errors.array(),
       });
     }
-    console.log("fromo validation middleware");
+ 
     next();
   },
+];
+
+const loginValidation = [
+  body("rationId")
+    .isString()
+    .notEmpty()
+    .withMessage("Ration ID is required")
+    .isLength({ min: 5 })
+    .withMessage("Ration ID must be at least 5 characters long"),
+  body("password")
+    .optional()
+    .isString()
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long"),
+  
+  (req: Request, res: Response, next: NextFunction) => {
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+      return res.status(400).send({
+
+      })
+    }
+  }
 ];
