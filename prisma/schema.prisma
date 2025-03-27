@@ -21,9 +21,8 @@ model User {
   lastName            String
   mobileNo            String
   email               String          @unique
-  Address             String
-  totalFamilyMembers  Int
-  password            String?
+  address             String
+  password            String
   fairPriceShopNumber Int
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
@@ -32,9 +31,9 @@ model User {
 
 model FamilyMembers {
   id       String @id @default(uuid())
-  rationId String
   fullName String
   age      Int
   relation String
+  rationId String @map("ration_id")
   user     User   @relation(fields: [rationId], references: [rationId])
 }

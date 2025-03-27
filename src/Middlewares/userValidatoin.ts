@@ -34,11 +34,7 @@ export const registerValidation = [
 
   body("email").isEmail().withMessage("Invalid email format"),
 
-  body("Address").isString().notEmpty().withMessage("Address is required"),
-
-  body("totalFamilyMembers")
-    .isInt({ min: 1 })
-    .withMessage("Total family members must be at least 1"),
+  body("address").isString().notEmpty().withMessage("Address is required"),
 
   body("password")
     .optional()
@@ -59,5 +55,30 @@ export const registerValidation = [
         errors: errors.array(),
       });
     }
+ 
+    next();
   },
+];
+
+const loginValidation = [
+  body("rationId")
+    .isString()
+    .notEmpty()
+    .withMessage("Ration ID is required")
+    .isLength({ min: 5 })
+    .withMessage("Ration ID must be at least 5 characters long"),
+  body("password")
+    .optional()
+    .isString()
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long"),
+  
+  (req: Request, res: Response, next: NextFunction) => {
+    const error = validationResult(req);
+    if (!error.isEmpty()) {
+      return res.status(400).send({
+
+      })
+    }
+  }
 ];
