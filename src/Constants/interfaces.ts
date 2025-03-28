@@ -1,3 +1,4 @@
+import { Request } from "express";
 interface CheckRegReqBody {
   rationId: string; // primary
   adharcardNumber: string; //unique
@@ -15,4 +16,7 @@ interface CheckLoginReqBody {
   rationId: string;
   password: string;
 }
-export { CheckRegReqBody, CheckLoginReqBody };
+interface AuthRequest extends Request {
+  id?: string;
+}
+export { CheckRegReqBody, CheckLoginReqBody, AuthRequest };

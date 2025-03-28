@@ -7,15 +7,13 @@ export const generateToken = async (
   msg: string
 ): Promise<any> => {
   try {
-    console.log("hello from jwt");
     const jwtSecret = process.env.JWT_SECRET as string;
 
     // generate token
-    let authToken = jwt.sign({ rationId }, jwtSecret, {
+    let token = jwt.sign({ rationId }, jwtSecret, {
       expiresIn: "1d",
     });
     // token with Bearer Naming convention
-    const token = `Bearer ${authToken}`;
     console.log(token);
     return res
       .status(200)

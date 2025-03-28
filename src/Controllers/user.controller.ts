@@ -58,7 +58,6 @@ const registerUser = async (req: Request, res: Response): Promise<any> => {
 // login user controller
 const loginUser = async (req: Request, res: Response): Promise<any> => {
   try {
-    console.log(req.body);
     const { rationId, password }: CheckLoginReqBody = req.body;
 
     const user = await prisma.user.findUnique({ where: { rationId } });
@@ -81,7 +80,7 @@ const loginUser = async (req: Request, res: Response): Promise<any> => {
         message: "Invalid ration id or password.",
       });
     }
-    console.log("hello frolm login");
+
     generateToken(
       user.rationId,
       res,
