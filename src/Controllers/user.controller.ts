@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import {
   AuthRequest,
@@ -99,7 +99,7 @@ const loginUser = async (req: Request, res: Response): Promise<any> => {
     });
   }
 };
-
+// generate otp controller
 const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const tokenExpiryTime = process.env.TOKEN_EXPIRY_TIME as string;
@@ -114,7 +114,7 @@ const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
     }
     const mobileNo = user.mobileNo;
     // Genetating otp
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp: string = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Store or update the OTP in Redis with a fresh 10-minute expiry
     await redis.set(`otp:${mobileNo}`, otp, "EX", tokenExpiryTime);
@@ -132,9 +132,10 @@ const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
     });
   }
 };
-
+// verify otp controller
 const verifyOtp = async (req: Request, res: Response): Promise<any> => {
   try {
+    console.log(req.body);
     const { mobileNo, otp } = req.body;
 
     if (!mobileNo || !otp) {
@@ -146,6 +147,7 @@ const verifyOtp = async (req: Request, res: Response): Promise<any> => {
 
     // Check if the entered mobileNo has an OTP
     const storedOtp = await redis.get(`otp:${mobileNo}`);
+    console.log(`Stored OTP: ${storedOtp}`);
 
     if (!storedOtp) {
       return res.status(400).send({

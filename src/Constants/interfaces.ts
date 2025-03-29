@@ -16,7 +16,12 @@ interface CheckLoginReqBody {
   rationId: string;
   password: string;
 }
+interface CheckFamilyInfo {
+  fullName: string;
+  age: number;
+  relation: string;
+}
 interface AuthRequest extends Request {
   id?: string;
 }
-export { CheckRegReqBody, CheckLoginReqBody, AuthRequest };
+export { CheckRegReqBody, CheckLoginReqBody, AuthRequest, CheckFamilyInfo };

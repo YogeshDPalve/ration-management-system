@@ -55,12 +55,12 @@ export const registerValidation = [
         errors: errors.array(),
       });
     }
- 
+
     next();
   },
 ];
 
-const loginValidation = [
+export const loginValidation = [
   body("rationId")
     .isString()
     .notEmpty()
@@ -72,13 +72,24 @@ const loginValidation = [
     .isString()
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long"),
-  
+
   (req: Request, res: Response, next: NextFunction) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
-      return res.status(400).send({
-
-      })
+      return res.status(400).send({});
     }
-  }
+  },
+];
+
+export const addFamilyMemberValidation = [
+  body("fullName").notEmpty().isString().withMessage("Full name is required"),
+  body("relation")
+    .notEmpty()
+    .isString()
+    .withMessage("Relation with user is required"),
+  body("age")
+    .notEmpty()
+    .withMessage("Age is required")
+    .isNumeric()
+    .withMessage("Please enter valid age"),
 ];

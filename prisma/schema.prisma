@@ -4,6 +4,12 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -30,10 +36,12 @@ model User {
 }
 
 model FamilyMembers {
-  id       String @id @default(uuid())
-  fullName String
-  age      Int
-  relation String
-  rationId String @map("ration_id")
-  user     User   @relation(fields: [rationId], references: [rationId])
+  id        String  @id @default(uuid())
+  adharCard String  @unique
+  fullName  String
+  age       Int
+  relation  String
+  gender    Gender?
+  rationId  String  @map("ration_id")
+  user      User    @relation(fields: [rationId], references: [rationId])
 }

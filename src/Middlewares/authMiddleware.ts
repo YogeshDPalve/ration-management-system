@@ -15,8 +15,8 @@ const authUserMiddleware = async (
         message: "token not found",
       });
     }
-    const authToken: string = token.split(" ")[1];
-    const verify = jwt.verify(authToken, jwtSecret) as JwtPayload;
+
+    const verify = jwt.verify(token, jwtSecret) as JwtPayload;
     if (!verify) {
       return res.status(400).send({
         success: false,
