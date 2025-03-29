@@ -5,7 +5,10 @@ import {
   registerUser,
   verifyOtp,
 } from "../Controllers/user.controller";
-import { registerValidation } from "../Middlewares/userValidatoin";
+import {
+  loginValidation,
+  registerValidation,
+} from "../Middlewares/userValidatoin";
 import { ValidationChain } from "express-validator";
 import checkUnique from "../Middlewares/checkUniqueFields";
 import authUserMiddleware from "../Middlewares/authMiddleware";
@@ -18,7 +21,7 @@ router.post(
   checkUnique,
   registerUser
 );
-router.post("/login", loginUser);
+router.post("/login", loginValidation as ValidationChain[], loginUser);
 router.post("/generate-otp", authUserMiddleware, generateOtp);
 router.post("/verify-otp", authUserMiddleware, verifyOtp);
 
