@@ -74,10 +74,14 @@ export const loginValidation = [
     .withMessage("Password must be at least 6 characters long"),
 
   (req: Request, res: Response, next: NextFunction) => {
-    const error = validationResult(req);
-    if (!error.isEmpty()) {
-      return res.status(400).send({});
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        errors: errors.array(),
+      });
     }
+
+    next();
   },
 ];
 
@@ -95,6 +99,17 @@ export const addFamilyMemberValidation = [
   body("age")
     .notEmpty()
     .withMessage("Age is required")
-    .isNumeric()
+    .toInt()
     .withMessage("Please enter valid age"),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        errors: errors.array(),
+      });
+    }
+
+    next();
+  },
 ];

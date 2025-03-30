@@ -90,6 +90,7 @@ const loginUser = async (req: Request, res: Response): Promise<any> => {
 
     generateToken(user, res);
   } catch (error) {
+    console.log(error);
     return res.status(500).send({
       success: false,
       message: "Internal server error in login controller",
@@ -102,7 +103,7 @@ const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const tokenExpiryTime = process.env.TOKEN_EXPIRY_TIME as string;
     const rationId = req.info?.rationId as string;
-
+    console.log(rationId);
     const user = await prisma.user.findUnique({ where: { rationId } });
     if (!user) {
       return res.status(400).send({

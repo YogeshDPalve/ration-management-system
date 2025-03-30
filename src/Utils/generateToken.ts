@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Response } from "express";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+
 export const generateToken = async (user: any, res: Response): Promise<any> => {
   try {
     const userInfo = {
@@ -17,8 +16,8 @@ export const generateToken = async (user: any, res: Response): Promise<any> => {
     let token = jwt.sign({ userInfo }, jwtSecret, {
       expiresIn: "1d",
     });
+
     // token with Bearer Naming convention
-    console.log(token);
     return res
       .status(200)
       .cookie("token", token, {
