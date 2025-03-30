@@ -5,10 +5,12 @@ import {
   AuthRequest,
   CheckLoginReqBody,
   CheckRegReqBody,
+  OtpToken,
 } from "../Constants/interfaces";
-import { generateToken } from "../Utils/generateToken";
+import { generateOtpToken, generateToken } from "../Utils/generateToken";
 import redis from "../Utils/redis";
 import sendOtp from "../Utils/twilio";
+
 // prisma initiation
 const prisma = new PrismaClient();
 
@@ -86,11 +88,7 @@ const loginUser = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    generateToken(
-      user.rationId,
-      res,
-      `Welcome back ${user.firstName} ${user.lastName}🤍.`
-    );
+    generateToken(user, res);
   } catch (error) {
     return res.status(500).send({
       success: false,
@@ -103,7 +101,7 @@ const loginUser = async (req: Request, res: Response): Promise<any> => {
 const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const tokenExpiryTime = process.env.TOKEN_EXPIRY_TIME as string;
-    const rationId = req.id;
+    const rationId = req.info?.rationId as string;
 
     const user = await prisma.user.findUnique({ where: { rationId } });
     if (!user) {
@@ -133,9 +131,9 @@ const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   }
 };
 // verify otp controller
-const verifyOtp = async (req: Request, res: Response): Promise<any> => {
+const verifyOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    console.log(req.body);
+    const { rationId, firstName, lastName } = req.info ?? {};
     const { mobileNo, otp } = req.body;
 
     if (!mobileNo || !otp) {
@@ -167,17 +165,13 @@ const verifyOtp = async (req: Request, res: Response): Promise<any> => {
     // OTP is correct, delete it from Redis
     await redis.del(`otp:${mobileNo}`);
 
-    return res
-      .status(200)
-      .cookie("verifiedOtp", true, {
-        httpOnly: true,
-        sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000, //! for 1 day
-      })
-      .send({
-        success: true,
-        message: "OTP verified successfully",
-      });
+    //generate the opt token for further verification
+    generateOtpToken(
+      res,
+      rationId as string,
+      firstName as string,
+      lastName as string
+    );
   } catch (error) {
     console.error("Error verifying OTP:", error);
     return res.status(500).send({

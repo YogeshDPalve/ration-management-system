@@ -1,6 +1,7 @@
 import { Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { AuthRequest } from "../Constants/interfaces";
+
 const authUserMiddleware = async (
   req: AuthRequest,
   res: Response,
@@ -23,7 +24,14 @@ const authUserMiddleware = async (
         message: "Invalid token",
       });
     }
-    req.id = verify.rationId;
+
+    req.info = {
+      rationId: verify.rationId,
+      firstName: verify.firstName,
+      lastName: verify.lastName,
+      adharCardNumber: verify.adharcardNumber,
+      mobileNumber: verify.mobileNumber,
+    };
     next();
   } catch (error) {
     return res.status(500).send({
@@ -33,4 +41,37 @@ const authUserMiddleware = async (
     });
   }
 };
-export default authUserMiddleware;
+const authOtpMiddleare = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): Promise<any> => {
+  try {
+    const jwtSecret = process.env.JWT_SECRET as string;
+    const { verifiedOtp } = req.cookies;
+    if (!verifiedOtp) {
+      return res.status(400).send({
+        success: false,
+        message: "token not found",
+      });
+    }
+
+    const verify = jwt.verify(verifiedOtp, jwtSecret) as JwtPayload;
+    if (!verify) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid token",
+      });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "Internal server error in auth user otp middleware",
+      error,
+    });
+  }
+};
+
+export { authUserMiddleware, authOtpMiddleare };

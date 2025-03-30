@@ -1,4 +1,9 @@
 import { Request } from "express";
+enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  OTHER = "OTHER",
+}
 interface CheckRegReqBody {
   rationId: string; // primary
   adharcardNumber: string; //unique
@@ -19,9 +24,28 @@ interface CheckLoginReqBody {
 interface CheckFamilyInfo {
   fullName: string;
   age: number;
+  gender: Gender;
+  adharCard: string;
   relation: string;
 }
 interface AuthRequest extends Request {
-  id?: string;
+  info?: {
+    rationId: string;
+    firstName: string;
+    lastName: string;
+    adharCardNumber: string;
+    mobileNumber: string;
+  };
 }
-export { CheckRegReqBody, CheckLoginReqBody, AuthRequest, CheckFamilyInfo };
+interface OtpToken {
+  rationId: string;
+  firstName: string;
+  lastName: string;
+}
+export {
+  CheckRegReqBody,
+  CheckLoginReqBody,
+  AuthRequest,
+  CheckFamilyInfo,
+  OtpToken,
+};

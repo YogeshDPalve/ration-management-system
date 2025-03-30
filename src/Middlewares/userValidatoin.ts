@@ -87,6 +87,11 @@ export const addFamilyMemberValidation = [
     .notEmpty()
     .isString()
     .withMessage("Relation with user is required"),
+  body("adharCard")
+    .notEmpty()
+    .isString()
+    .withMessage("Adharcard Number is required"),
+  body("gender").notEmpty().isString().withMessage("gender is required"),
   body("age")
     .notEmpty()
     .withMessage("Age is required")
