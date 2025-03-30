@@ -8,6 +8,7 @@ const authUserMiddleware = async (
   next: NextFunction
 ): Promise<any> => {
   try {
+    console.log("from auth user");
     const jwtSecret = process.env.JWT_SECRET as string;
     const { token } = req.cookies;
     if (!token) {
@@ -26,11 +27,11 @@ const authUserMiddleware = async (
     }
 
     req.info = {
-      rationId: verify.rationId,
-      firstName: verify.firstName,
-      lastName: verify.lastName,
-      adharCardNumber: verify.adharcardNumber,
-      mobileNumber: verify.mobileNumber,
+      rationId: verify.userInfo.rationId,
+      firstName: verify.userInfo.firstName,
+      lastName: verify.userInfo.lastName,
+      adharCardNumber: verify.userInfo.adharcardNumber,
+      mobileNumber: verify.userInfo.mobileNumber,
     };
     next();
   } catch (error) {
@@ -47,6 +48,7 @@ const authOtpMiddleare = async (
   next: NextFunction
 ): Promise<any> => {
   try {
+    console.log("from auth otp");
     const jwtSecret = process.env.JWT_SECRET as string;
     const { verifiedOtp } = req.cookies;
     if (!verifiedOtp) {
