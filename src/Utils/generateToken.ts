@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 export const generateToken = async (user: any, res: Response): Promise<any> => {
   try {
+    console.log("from start of token ");
     const userInfo = {
       rationId: user.rationId,
       firstName: user.firstName,
@@ -17,6 +18,7 @@ export const generateToken = async (user: any, res: Response): Promise<any> => {
     let token = jwt.sign({ userInfo }, jwtSecret, {
       expiresIn: "1d",
     });
+    console.log("from end of token ");
     // token with Bearer Naming convention
     console.log(token);
     return res
