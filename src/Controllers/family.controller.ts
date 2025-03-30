@@ -8,13 +8,16 @@ const addFamilyMember = async (
   res: Response
 ): Promise<any> => {
   try {
-    const rationId = req.id as string;
-    const { fullName, age, relation }: CheckFamilyInfo = req.body;
+    const rationId: string = req.info?.rationId as string;
+    const { fullName, age, relation, adharCard, gender }: CheckFamilyInfo =
+      req.body;
 
     const member = await prisma.familyMembers.create({
       data: {
         fullName,
         age,
+        adharCard,
+        gender,
         relation,
         rationId,
       },

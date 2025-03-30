@@ -1,6 +1,9 @@
 import { Router } from "express";
-import authUserMiddleware from "../Middlewares/authMiddleware";
-import verifiedOtp from "../Middlewares/verifiedOtpMiddleware";
+import {
+  authOtpMiddleare,
+  authUserMiddleware,
+} from "../Middlewares/authMiddleware";
+
 import { addFamilyMember } from "../Controllers/family.controller";
 import { addFamilyMemberValidation } from "../Middlewares/userValidatoin";
 const router = Router();
@@ -9,7 +12,7 @@ const router = Router();
 router.post(
   "/add-member",
   authUserMiddleware,
-  verifiedOtp,
+  authOtpMiddleare,
   addFamilyMemberValidation,
   addFamilyMember
 );
