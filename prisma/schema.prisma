@@ -20,19 +20,26 @@ datasource db {
 }
 
 model User {
-  rationId            String          @id @unique
-  adharcardNumber     String          @unique
+  rationId            String   @id @unique
+  adharcardNumber     String   @unique
   firstName           String
   middleName          String?
   lastName            String
   mobileNo            String
-  email               String          @unique
+  email               String   @unique
   address             String
   password            String
   fairPriceShopNumber Int
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
   FamilyMembers       FamilyMembers[]
+  RationAllotment     RationAllotment?
+  RationNotifications RationNotification[]
+  PurchaseHistory     PurchaseHistory[]
+  Complaint           Complaint[]
+  FPSTransaction      FPSTransaction[]
 }
 
 model FamilyMembers {
@@ -44,4 +51,110 @@ model FamilyMembers {
   gender    Gender?
   rationId  String  @map("ration_id")
   user      User    @relation(fields: [rationId], references: [rationId])
+}
+
+model RationAllotment {
+  id         String   @id @default(uuid())
+  rationId   String   @unique
+  wheatQuota Int      @default(0) // Monthly quota
+  riceQuota  Int      @default(0)
+  sugarQuota Int      @default(0)
+  daalQuota  Int      @default(0)
+  oilQuota   Int      @default(0)
+  wheatUsed  Int      @default(0) // Used amount
+  riceUsed   Int      @default(0)
+  sugarUsed  Int      @default(0)
+  daalUsed   Int      @default(0)
+  oilUsed    Int      @default(0)
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+
+  // Relation with User
+  user User @relation(fields: [rationId], references: [rationId])
+}
+
+model RationNotification {
+  id        String   @id @default(uuid())
+  rationId  String
+  message   String
+  status    String   @default("pending") // pending, sent, seen
+  createdAt DateTime @default(now())
+
+  // Relation with User
+  user User @relation(fields: [rationId], references: [rationId])
+}
+
+model PurchaseHistory {
+  id             String   @id @default(uuid())
+  rationId       String
+  wheatPurchased Int      @default(0)
+  ricePurchased  Int      @default(0)
+  sugarPurchased Int      @default(0)
+  daalPurchased  Int      @default(0)
+  oilPurchased   Int      @default(0)
+  purchaseDate   DateTime @default(now())
+  fpsShopNumber  Int // Fair Price Shop Number
+
+  // Relation with User
+  user User @relation(fields: [rationId], references: [rationId])
+}
+
+model Complaint {
+  id          String   @id @default(uuid())
+  rationId    String
+  shopNumber  Int // FPS shop number
+  issueType   String // e.g., "Missing Ration", "Overcharging", "Corruption"
+  description String
+  proof       String? // URL of uploaded proof (photo/receipt)
+  status      String   @default("pending") // pending, resolved, rejected
+  createdAt   DateTime @default(now())
+
+  // Relation with User
+  user User @relation(fields: [rationId], references: [rationId])
+}
+
+model FairPriceShop {
+  id                   String                 @id @default(uuid())
+  shopNumber           Int                    @unique
+  ownerName            String
+  location             String
+  contact              String
+  stockWheat           Float                  @default(0.0)
+  stockRice            Float                  @default(0.0)
+  stockSugar           Float                  @default(0.0)
+  stockDaal            Float                  @default(0.0)
+  stockOil             Float                  @default(0.0)
+  lastUpdated          DateTime               @updatedAt
+  FPSTransaction       FPSTransaction[]
+  GovernmentMonitoring GovernmentMonitoring[]
+}
+
+model FPSTransaction {
+  id              String   @id @default(uuid())
+  rationId        String
+  shopNumber      Int
+  wheatBought     Int      @default(0)
+  riceBought      Int      @default(0)
+  sugarBought     Int      @default(0)
+  daalBought      Int      @default(0)
+  oilBought       Int      @default(0)
+  totalAmount     Int      @default(0)
+  transactionDate DateTime @default(now())
+
+  // Relations
+  user User          @relation(fields: [rationId], references: [rationId])
+  shop FairPriceShop @relation(fields: [shopNumber], references: [shopNumber])
+}
+
+model GovernmentMonitoring {
+  id                String   @id @default(uuid())
+  shopNumber        Int
+  totalRationIssued Float    @default(0.0)
+  totalTransactions Int      @default(0)
+  totalComplaints   Int      @default(0)
+  status            String   @default("active") // active, under review, blacklisted
+  lastChecked       DateTime @updatedAt
+
+  // Relation with FPS
+  shop FairPriceShop @relation(fields: [shopNumber], references: [shopNumber])
 }
