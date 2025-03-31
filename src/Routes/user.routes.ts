@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   generateOtp,
   loginUser,
+  logoutUser,
   registerUser,
   verifyOtp,
 } from "../Controllers/user.controller";
@@ -11,7 +12,10 @@ import {
 } from "../Middlewares/userValidatoin";
 import { ValidationChain } from "express-validator";
 import checkUnique from "../Middlewares/checkUniqueFields";
-import { authUserMiddleware } from "../Middlewares/authMiddleware";
+import {
+  authOtpMiddleare,
+  authUserMiddleware,
+} from "../Middlewares/authMiddleware";
 
 const router = Router();
 
@@ -24,5 +28,6 @@ router.post(
 router.post("/login", loginValidation as ValidationChain[], loginUser);
 router.post("/generate-otp", authUserMiddleware, generateOtp);
 router.post("/verify-otp", authUserMiddleware, verifyOtp);
+router.post("/logout", authUserMiddleware, authOtpMiddleare, logoutUser);
 
 export default router;
