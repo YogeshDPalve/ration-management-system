@@ -30,11 +30,6 @@ router.post("/login", loginValidation as ValidationChain[], loginUser);
 router.post("/generate-otp", authUserMiddleware, generateOtp);
 router.post("/verify-otp", authUserMiddleware, verifyOtp);
 router.post("/logout", authUserMiddleware, authOtpMiddleare, logoutUser);
-router.post(
-  "/get-user-info",
-  authUserMiddleware,
-  authOtpMiddleare,
-  getUserInfo
-);
+router.get("/get-user-info", authUserMiddleware, authOtpMiddleare, getUserInfo);
 
 export default router;
