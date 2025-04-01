@@ -182,4 +182,55 @@ const verifyOtp = async (req: AuthRequest, res: Response): Promise<any> => {
     });
   }
 };
-export { registerUser, loginUser, generateOtp, verifyOtp };
+
+const logoutUser = (_: Request, res: Response): any => {
+  try {
+    return res
+      .cookie("token", "", { maxAge: 0 })
+      .cookie("verifiedOtp", "", { maxAge: 0 })
+      .send({
+        success: true,
+        message: "User logged out successfully",
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      success: false,
+      message: "Unable to logout",
+    });
+  }
+};
+
+const getUserInfo = async (req: AuthRequest, res: Response): Promise<any>  => {
+  try {
+    const rationId: string = req.info?.rationId as string;
+
+    const userInfo = await prisma.user.findUnique({ where: { rationId } });
+    if (!userInfo) {
+      return res.status(400).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).send({
+      success: true,
+      message: "User info get successfully",
+      userInfo,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      success: false,
+      message: "Internal server error to get user info",
+    });
+  }
+};
+export {
+  registerUser,
+  loginUser,
+  generateOtp,
+  verifyOtp,
+  logoutUser,
+  getUserInfo,
+};

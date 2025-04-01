@@ -119,11 +119,11 @@ model FairPriceShop {
   ownerName            String
   location             String
   contact              String
-  stockWheat           Float                  @default(0.0)
-  stockRice            Float                  @default(0.0)
-  stockSugar           Float                  @default(0.0)
-  stockDaal            Float                  @default(0.0)
-  stockOil             Float                  @default(0.0)
+  stockWheat           Int                    @default(0)
+  stockRice            Int                    @default(0)
+  stockSugar           Int                    @default(0)
+  stockDaal            Int                    @default(0)
+  stockOil             Int                    @default(0)
   lastUpdated          DateTime               @updatedAt
   FPSTransaction       FPSTransaction[]
   GovernmentMonitoring GovernmentMonitoring[]
