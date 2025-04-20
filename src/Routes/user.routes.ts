@@ -6,8 +6,11 @@ import {
   logoutUser,
   registerUser,
   verifyOtp,
+  verifyResetOtp,
 } from "../Controllers/user.controller";
 import {
+  addOtpValidation,
+  addResetOtpValidation,
   loginValidation,
   registerValidation,
 } from "../Middlewares/userValidatoin";
@@ -28,8 +31,18 @@ router.post(
 );
 router.post("/login", loginValidation as ValidationChain[], loginUser);
 router.post("/generate-otp", authUserMiddleware, generateOtp);
-router.post("/verify-otp", authUserMiddleware, verifyOtp);
+router.post(
+  "/verify-otp",
+  addOtpValidation as ValidationChain[],
+  authUserMiddleware,
+  verifyOtp
+);
 router.post("/logout", authUserMiddleware, authOtpMiddleare, logoutUser);
+router.post(
+  "/reset-password",
+  addResetOtpValidation as ValidationChain[],
+  verifyResetOtp
+);
 router.get("/get-user-info", authUserMiddleware, authOtpMiddleare, getUserInfo);
 
 export default router;

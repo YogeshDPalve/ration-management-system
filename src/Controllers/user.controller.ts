@@ -1,11 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import {
   AuthRequest,
   CheckLoginReqBody,
   CheckRegReqBody,
   OtpToken,
+  VerifyOtp,
+  VerifyResetOtp,
 } from "../Constants/interfaces";
 import { generateOtpToken, generateToken } from "../Utils/generateToken";
 import redis from "../Utils/redis";
@@ -16,7 +18,7 @@ const prisma = new PrismaClient();
 
 // register user controller
 const registerUser = async (req: Request, res: Response): Promise<any> => {
-  try {
+  try {cls
     const {
       rationId, // primary
       adharcardNumber, //unique
@@ -99,10 +101,13 @@ const loginUser = async (req: Request, res: Response): Promise<any> => {
   }
 };
 // generate otp controller
+interface Ration {
+  rationId: string;
+}
 const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const tokenExpiryTime = process.env.TOKEN_EXPIRY_TIME as string;
-    const rationId = req.info?.rationId as string;
+    const { rationId }: Ration = req.body;
     console.log(rationId);
     const user = await prisma.user.findUnique({ where: { rationId } });
     if (!user) {
@@ -135,7 +140,7 @@ const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
 const verifyOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { rationId, firstName, lastName } = req.info ?? {};
-    const { mobileNo, otp } = req.body;
+    const { mobileNo, otp }: VerifyOtp = req.body;
 
     if (!mobileNo || !otp) {
       return res.status(400).send({
@@ -183,6 +188,57 @@ const verifyOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   }
 };
 
+// verify otp to reset password
+const verifyResetOtp = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { mobileNo, otp, password, confirmPassword }: VerifyResetOtp =
+      req.body;
+
+    if (password !== confirmPassword) {
+      return res.status(400).send({
+        success: false,
+        message: "Password and confirm password are different",
+      });
+    }
+    // Check if the entered mobileNo has an OTP
+    const storedOtp = await redis.get(`otp:${mobileNo}`);
+    console.log(`Stored OTP: ${storedOtp}`);
+
+    if (!storedOtp) {
+      return res.status(400).send({
+        success: false,
+        message: "OTP expired or does not exist",
+      });
+    }
+
+    // Verify the OTP for the current mobile number
+    if (storedOtp !== otp) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    // Reset password
+    
+
+    // OTP is correct, delete it from Redis
+    await redis.del(`otp:${mobileNo}`);
+
+    //generate the opt token for further verification
+    return res.status(200).send({
+      success: false,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({
+      success: false,
+      message: "Internal server error to reset passowrd",
+    });
+  }
+};
+
 const logoutUser = (_: Request, res: Response): any => {
   try {
     return res
@@ -201,7 +257,7 @@ const logoutUser = (_: Request, res: Response): any => {
   }
 };
 
-const getUserInfo = async (req: AuthRequest, res: Response): Promise<any>  => {
+const getUserInfo = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const rationId: string = req.info?.rationId as string;
 
@@ -226,6 +282,7 @@ const getUserInfo = async (req: AuthRequest, res: Response): Promise<any>  => {
     });
   }
 };
+
 export {
   registerUser,
   loginUser,
@@ -233,4 +290,5 @@ export {
   verifyOtp,
   logoutUser,
   getUserInfo,
+  verifyResetOtp,
 };

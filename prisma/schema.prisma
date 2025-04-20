@@ -25,7 +25,7 @@ model User {
   firstName           String
   middleName          String?
   lastName            String
-  mobileNo            String
+  mobileNo            String   @unique
   email               String   @unique
   address             String
   password            String

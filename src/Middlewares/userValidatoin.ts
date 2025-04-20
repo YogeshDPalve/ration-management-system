@@ -113,3 +113,68 @@ export const addFamilyMemberValidation = [
     next();
   },
 ];
+
+export const addOtpValidation = [
+  body("mobileNo")
+    .isString()
+    .notEmpty()
+    .withMessage("Mobile number is required")
+    .matches(/^[0-9]{10}$/)
+    .withMessage("Mobile number must be 10 digits"),
+
+  body("otp")
+    .isString()
+    .notEmpty()
+    .withMessage("OTP is required")
+    .matches(/^[0-9]{10}$/)
+    .isLength({ min: 6, max: 6 })
+    .withMessage("OTP must be 6 digit"),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        errors: errors.array(),
+      });
+    }
+
+    next();
+  },
+];
+export const addResetOtpValidation = [
+  body("mobileNo")
+    .isString()
+    .notEmpty()
+    .withMessage("Mobile number is required")
+    .matches(/^[0-9]{10}$/)
+    .withMessage("Mobile number must be 10 digits"),
+
+  body("otp")
+    .isString()
+    .notEmpty()
+    .withMessage("OTP is required")
+    .matches(/^[0-9]{10}$/)
+    .isLength({ min: 6, max: 6 })
+    .withMessage("OTP must be 6 digit"),
+  body("password")
+    .optional()
+    .isString()
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long"),
+
+  body("confirmPassword")
+    .optional()
+    .isString()
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long"),
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        errors: errors.array(),
+      });
+    }
+
+    next();
+  },
+];
