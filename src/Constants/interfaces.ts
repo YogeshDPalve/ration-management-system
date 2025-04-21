@@ -42,10 +42,22 @@ interface OtpToken {
   firstName: string;
   lastName: string;
 }
+interface VerifyResetOtp {
+  rationId: string;
+  otp: string;
+  password: string;
+  confirmPassword: string;
+}
+interface VerifyOtp {
+  mobileNo: string;
+  otp: string;
+}
 export {
   CheckRegReqBody,
   CheckLoginReqBody,
   AuthRequest,
   CheckFamilyInfo,
   OtpToken,
+  VerifyOtp,
+  VerifyResetOtp,
 };

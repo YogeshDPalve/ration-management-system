@@ -11,14 +11,13 @@ const checkUnique = async (
   res: Response,
   next: NextFunction
 ): Promise<any> => {
- 
-  const { rationId, adharcardNumber, email } = req.body;
+  const { rationId, adharcardNumber, email, mobileNo } = req.body;
 
   //   check if User exists
   const checkUser: User = await prisma.user.findUnique({ where: { rationId } });
   if (checkUser) {
     return res.status(400).send({
-      success: true,
+      success: false,
       message: "User already exists.",
     });
   }
@@ -29,7 +28,7 @@ const checkUnique = async (
   });
   if (adharCheck) {
     return res.status(400).send({
-      success: true,
+      success: false,
       message: "Adhar Number already exists.",
     });
   }
@@ -40,7 +39,18 @@ const checkUnique = async (
   });
   if (checkEmail) {
     return res.status(400).send({
-      success: true,
+      success: false,
+      message: "Email already exists.",
+    });
+  }
+
+  // check if Mobile exists
+  const checkMobile: User = await prisma.user.findUnique({
+    where: { mobileNo },
+  });
+  if (checkMobile) {
+    return res.status(400).send({
+      success: false,
       message: "Mobile Number already exists.",
     });
   }

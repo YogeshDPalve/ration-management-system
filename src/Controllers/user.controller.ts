@@ -6,6 +6,8 @@ import {
   CheckLoginReqBody,
   CheckRegReqBody,
   OtpToken,
+  VerifyOtp,
+  VerifyResetOtp,
 } from "../Constants/interfaces";
 import { generateOtpToken, generateToken } from "../Utils/generateToken";
 import redis from "../Utils/redis";
@@ -99,11 +101,13 @@ const loginUser = async (req: Request, res: Response): Promise<any> => {
   }
 };
 // generate otp controller
+interface Ration {
+  rationId: string;
+}
 const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const tokenExpiryTime = process.env.TOKEN_EXPIRY_TIME as string;
-    const rationId = req.info?.rationId as string;
-    console.log(rationId);
+    const { rationId }: Ration = req.body;
     const user = await prisma.user.findUnique({ where: { rationId } });
     if (!user) {
       return res.status(400).send({
@@ -117,17 +121,24 @@ const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
 
     // Store or update the OTP in Redis with a fresh 10-minute expiry
     await redis.set(`otp:${mobileNo}`, otp, "EX", tokenExpiryTime);
+    // await redis.set(`otp:${mobileNo}`, otp);
     const result = await redis.get(`otp:${mobileNo}`);
     console.log(`Stored OTP: ${result}`);
 
+    res.status(200).send({
+      success: true,
+      message: "otp send successfully to your mobile number",
+      otp,
+    });
+
     // send otp to user via sms
-    sendOtp(otp, mobileNo, tokenExpiryTime, res);
+    // sendOtp(otp, mobileNo, tokenExpiryTime, res);
   } catch (error) {
     console.error("Error resending OTP:", error);
     return res.status(500).send({
       success: false,
       message: "Internal server error",
-      error: error,
+      error,
     });
   }
 };
@@ -135,7 +146,7 @@ const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
 const verifyOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { rationId, firstName, lastName } = req.info ?? {};
-    const { mobileNo, otp } = req.body;
+    const { mobileNo, otp }: VerifyOtp = req.body;
 
     if (!mobileNo || !otp) {
       return res.status(400).send({
@@ -163,7 +174,7 @@ const verifyOtp = async (req: AuthRequest, res: Response): Promise<any> => {
       });
     }
 
-    // OTP is correct, delete it from Redis
+    // OTP is correct, delete  it from Redis
     await redis.del(`otp:${mobileNo}`);
 
     //generate the opt token for further verification
@@ -179,6 +190,64 @@ const verifyOtp = async (req: AuthRequest, res: Response): Promise<any> => {
       success: false,
       message: "Internal server error",
       error: error,
+    });
+  }
+};
+
+// verify otp to reset password
+const verifyResetOtp = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { rationId, otp, password, confirmPassword }: VerifyResetOtp =
+      req.body;
+
+    const user = await prisma.user.findUnique({ where: { rationId } });
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: "User Not Found for provided ration id",
+      });
+    }
+    const mobileNo = user.mobileNo;
+    if (password !== confirmPassword) {
+      return res.status(400).send({
+        success: false,
+        message: "Password and confirm password are different",
+      });
+    }
+    // Check if the entered mobileNo has an OTP
+    const storedOtp = await redis.get(`otp:${mobileNo}`);
+    console.log(`Stored OTP: ${storedOtp}`);
+
+    if (!storedOtp) {
+      return res.status(400).send({
+        success: false,
+        message: "OTP expired or does not exist",
+      });
+    }
+
+    // Verify the OTP for the current mobile number
+    if (storedOtp !== otp) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    // Reset password
+
+    // OTP is correct, delete it from Redis
+    await redis.del(`otp:${mobileNo}`);
+
+    //generate the opt token for further verification
+    return res.status(200).send({
+      success: false,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({
+      success: false,
+      message: "Internal server error to reset passowrd",
     });
   }
 };
@@ -201,7 +270,7 @@ const logoutUser = (_: Request, res: Response): any => {
   }
 };
 
-const getUserInfo = async (req: AuthRequest, res: Response): Promise<any>  => {
+const getUserInfo = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const rationId: string = req.info?.rationId as string;
 
@@ -226,6 +295,7 @@ const getUserInfo = async (req: AuthRequest, res: Response): Promise<any>  => {
     });
   }
 };
+
 export {
   registerUser,
   loginUser,
@@ -233,4 +303,5 @@ export {
   verifyOtp,
   logoutUser,
   getUserInfo,
+  verifyResetOtp,
 };

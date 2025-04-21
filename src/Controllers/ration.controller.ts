@@ -41,4 +41,3 @@ const getRationDetails = async (
 };
 // allot ration details controller
 export { getRationDetails };
- 
