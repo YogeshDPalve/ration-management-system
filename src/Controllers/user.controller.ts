@@ -234,7 +234,19 @@ const verifyResetOtp = async (req: Request, res: Response): Promise<any> => {
     }
 
     // Reset password
+    const salt: string = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
+    const updatePassword = await prisma.user.update({
+      where: { rationId },
+      data: { password: hashedPassword },
+    });
+    if (!updatePassword) {
+      return res.status(400).send({
+        success: false,
+        message: "Error occured to reset the password",
+      });
+    }
     // OTP is correct, delete it from Redis
     await redis.del(`otp:${mobileNo}`);
 

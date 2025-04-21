@@ -32,9 +32,14 @@ router.post(
 );
 router.post("/login", loginValidation as ValidationChain[], loginUser);
 router.post(
-  "/generate-otp",
+  "/generate-login-otp",
   rationIdValidation as ValidationChain[],
   authUserMiddleware,
+  generateOtp
+);
+router.post(
+  "/generate-reset-otp",
+  rationIdValidation as ValidationChain[],
   generateOtp
 );
 router.post(
@@ -44,7 +49,7 @@ router.post(
   verifyOtp
 );
 router.post("/logout", authUserMiddleware, authOtpMiddleare, logoutUser);
-router.post(
+router.put(
   "/reset-password",
   addResetOtpValidation as ValidationChain[],
   verifyResetOtp
