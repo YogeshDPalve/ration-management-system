@@ -43,7 +43,7 @@ interface OtpToken {
   lastName: string;
 }
 interface VerifyResetOtp {
-  mobileNo: string;
+  rationId: string;
   otp: string;
   password: string;
   confirmPassword: string;

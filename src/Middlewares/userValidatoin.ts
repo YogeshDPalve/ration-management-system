@@ -126,8 +126,7 @@ export const addOtpValidation = [
     .isString()
     .notEmpty()
     .withMessage("OTP is required")
-    .matches(/^[0-9]{10}$/)
-    .isLength({ min: 6, max: 6 })
+    .matches(/^[0-9]{6}$/)
     .withMessage("OTP must be 6 digit"),
 
   (req: Request, res: Response, next: NextFunction) => {
@@ -141,29 +140,47 @@ export const addOtpValidation = [
     next();
   },
 ];
-export const addResetOtpValidation = [
-  body("mobileNo")
+
+export const rationIdValidation = [
+  body("rationId")
     .isString()
     .notEmpty()
-    .withMessage("Mobile number is required")
-    .matches(/^[0-9]{10}$/)
-    .withMessage("Mobile number must be 10 digits"),
+    .withMessage("Ration Id is required")
+    .matches(/^[0-9]{6}$/)
+    .withMessage("Ration Id must be 6 digit"),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        errors: errors.array(),
+      });
+    }
+
+    next();
+  },
+];
+export const addResetOtpValidation = [
+  body("rationId")
+    .isString()
+    .notEmpty()
+    .withMessage("Ration Id is required")
+    .matches(/^[0-9]{6}$/)
+    .withMessage("Ration Id must be 6 digits"),
 
   body("otp")
     .isString()
     .notEmpty()
     .withMessage("OTP is required")
-    .matches(/^[0-9]{10}$/)
-    .isLength({ min: 6, max: 6 })
+    .matches(/^[0-9]{6}$/) 
     .withMessage("OTP must be 6 digit"),
+  
   body("password")
-    .optional()
     .isString()
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long"),
 
   body("confirmPassword")
-    .optional()
     .isString()
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long"),

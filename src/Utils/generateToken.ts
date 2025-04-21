@@ -27,6 +27,7 @@ export const generateToken = async (user: any, res: Response): Promise<any> => {
       })
       .send({
         success: true,
+        userInfo,
         message: "Login successfull please verify otp",
         token,
       });
@@ -34,6 +35,7 @@ export const generateToken = async (user: any, res: Response): Promise<any> => {
     return res.status(500).send({
       success: false,
       message: "Internal server error in generate jwt token.",
+      error,
     });
   }
 };

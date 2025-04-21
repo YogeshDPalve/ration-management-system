@@ -12,6 +12,7 @@ import {
   addOtpValidation,
   addResetOtpValidation,
   loginValidation,
+  rationIdValidation,
   registerValidation,
 } from "../Middlewares/userValidatoin";
 import { ValidationChain } from "express-validator";
@@ -30,7 +31,12 @@ router.post(
   registerUser
 );
 router.post("/login", loginValidation as ValidationChain[], loginUser);
-router.post("/generate-otp", authUserMiddleware, generateOtp);
+router.post(
+  "/generate-otp",
+  rationIdValidation as ValidationChain[],
+  authUserMiddleware,
+  generateOtp
+);
 router.post(
   "/verify-otp",
   addOtpValidation as ValidationChain[],

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import {
   AuthRequest,
@@ -18,7 +18,7 @@ const prisma = new PrismaClient();
 
 // register user controller
 const registerUser = async (req: Request, res: Response): Promise<any> => {
-  try {cls
+  try {
     const {
       rationId, // primary
       adharcardNumber, //unique
@@ -108,7 +108,6 @@ const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const tokenExpiryTime = process.env.TOKEN_EXPIRY_TIME as string;
     const { rationId }: Ration = req.body;
-    console.log(rationId);
     const user = await prisma.user.findUnique({ where: { rationId } });
     if (!user) {
       return res.status(400).send({
@@ -122,17 +121,24 @@ const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
 
     // Store or update the OTP in Redis with a fresh 10-minute expiry
     await redis.set(`otp:${mobileNo}`, otp, "EX", tokenExpiryTime);
+    // await redis.set(`otp:${mobileNo}`, otp);
     const result = await redis.get(`otp:${mobileNo}`);
     console.log(`Stored OTP: ${result}`);
 
+    res.status(200).send({
+      success: true,
+      message: "otp send successfully to your mobile number",
+      otp,
+    });
+
     // send otp to user via sms
-    sendOtp(otp, mobileNo, tokenExpiryTime, res);
+    // sendOtp(otp, mobileNo, tokenExpiryTime, res);
   } catch (error) {
     console.error("Error resending OTP:", error);
     return res.status(500).send({
       success: false,
       message: "Internal server error",
-      error: error,
+      error,
     });
   }
 };
@@ -168,7 +174,7 @@ const verifyOtp = async (req: AuthRequest, res: Response): Promise<any> => {
       });
     }
 
-    // OTP is correct, delete it from Redis
+    // OTP is correct, delete  it from Redis
     await redis.del(`otp:${mobileNo}`);
 
     //generate the opt token for further verification
@@ -191,9 +197,17 @@ const verifyOtp = async (req: AuthRequest, res: Response): Promise<any> => {
 // verify otp to reset password
 const verifyResetOtp = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { mobileNo, otp, password, confirmPassword }: VerifyResetOtp =
+    const { rationId, otp, password, confirmPassword }: VerifyResetOtp =
       req.body;
 
+    const user = await prisma.user.findUnique({ where: { rationId } });
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: "User Not Found for provided ration id",
+      });
+    }
+    const mobileNo = user.mobileNo;
     if (password !== confirmPassword) {
       return res.status(400).send({
         success: false,
@@ -220,7 +234,6 @@ const verifyResetOtp = async (req: Request, res: Response): Promise<any> => {
     }
 
     // Reset password
-    
 
     // OTP is correct, delete it from Redis
     await redis.del(`otp:${mobileNo}`);

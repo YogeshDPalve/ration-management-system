@@ -17,7 +17,7 @@ const sendOtp = async (
     const expireTime = Number(tokenExpiryTime) / 60;
 
     // sending otp to user via sms
-    const message = await client.messages.create({
+    const msg = await client.messages.create({
       from: twilioMibleNo,
       to: `+91${clientNo}`,
       body: `Your OTP is ${otp}. It is valid for ${expireTime} minutes. Do not share this code with anyone.`,
@@ -25,8 +25,8 @@ const sendOtp = async (
 
     return res.status(200).send({
       success: true,
-      msg: "OTP sent successfully",
-      message,
+      message: "OTP sent successfully to your registered Mobile number",
+      msg,
     });
   } catch (error) {
     console.log(error);
