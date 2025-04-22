@@ -252,7 +252,7 @@ const verifyResetOtp = async (req: Request, res: Response): Promise<any> => {
 
     //generate the opt token for further verification
     return res.status(200).send({
-      success: false,
+      success: true,
       message: "Password reset successfully",
     });
   } catch (error) {
@@ -286,7 +286,23 @@ const getUserInfo = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const rationId: string = req.info?.rationId as string;
 
-    const userInfo = await prisma.user.findUnique({ where: { rationId } });
+    const userInfo = await prisma.user.findUnique({
+      where: { rationId },
+      select: {
+        rationId: true,
+        adharcardNumber: true,
+        firstName: true,
+        middleName: true,
+        lastName: true,
+        mobileNo: true,
+        email: true,
+        address: true,
+        fairPriceShopNumber: true,
+        createdAt: true,
+        updatedAt: true,
+        // password is intentionally excluded
+      },
+    });
     if (!userInfo) {
       return res.status(400).send({
         success: false,
