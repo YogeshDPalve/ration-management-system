@@ -103,7 +103,7 @@ const loginUser = async (req: Request, res: Response): Promise<any> => {
 // generate otp controller
 interface Ration {
   rationId: string;
-}
+} 
 const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const tokenExpiryTime = process.env.TOKEN_EXPIRY_TIME as string;
