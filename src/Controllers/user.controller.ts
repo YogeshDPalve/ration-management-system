@@ -103,7 +103,7 @@ const loginUser = async (req: Request, res: Response): Promise<any> => {
 // generate otp controller
 interface Ration {
   rationId: string;
-}
+} 
 const generateOtp = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const tokenExpiryTime = process.env.TOKEN_EXPIRY_TIME as string;
@@ -234,13 +234,25 @@ const verifyResetOtp = async (req: Request, res: Response): Promise<any> => {
     }
 
     // Reset password
+    const salt: string = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
+    const updatePassword = await prisma.user.update({
+      where: { rationId },
+      data: { password: hashedPassword },
+    });
+    if (!updatePassword) {
+      return res.status(400).send({
+        success: false,
+        message: "Error occured to reset the password",
+      });
+    }
     // OTP is correct, delete it from Redis
     await redis.del(`otp:${mobileNo}`);
 
     //generate the opt token for further verification
     return res.status(200).send({
-      success: false,
+      success: true,
       message: "Password reset successfully",
     });
   } catch (error) {
@@ -274,7 +286,23 @@ const getUserInfo = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const rationId: string = req.info?.rationId as string;
 
-    const userInfo = await prisma.user.findUnique({ where: { rationId } });
+    const userInfo = await prisma.user.findUnique({
+      where: { rationId },
+      select: {
+        rationId: true,
+        adharcardNumber: true,
+        firstName: true,
+        middleName: true,
+        lastName: true,
+        mobileNo: true,
+        email: true,
+        address: true,
+        fairPriceShopNumber: true,
+        createdAt: true,
+        updatedAt: true,
+        // password is intentionally excluded
+      },
+    });
     if (!userInfo) {
       return res.status(400).send({
         success: false,
