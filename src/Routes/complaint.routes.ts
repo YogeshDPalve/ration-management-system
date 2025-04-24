@@ -4,9 +4,12 @@ import {
   authOtpMiddleare,
   authUserMiddleware,
 } from "../Middlewares/authMiddleware";
-import { complaintValidation } from "../Middlewares/userValidatoin";
+import {
+  complaintValidation,
+  FeedbackValidation,
+} from "../Middlewares/userValidatoin";
 import { ValidationChain } from "express-validator";
-import { postComplaint } from "../Controllers/complaint.controller";
+import { feedback, postComplaint } from "../Controllers/complaint.controller";
 import path from "path";
 
 const router = Router();
@@ -37,4 +40,11 @@ router.post(
   postComplaint
 );
 
+router.post(
+  "/feedback",
+  FeedbackValidation as ValidationChain[],
+  authUserMiddleware,
+  authOtpMiddleare,
+  feedback
+);
 export default router;

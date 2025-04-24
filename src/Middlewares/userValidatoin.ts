@@ -1,5 +1,6 @@
 import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
+import { Rating } from "../Constants/interfaces";
 
 export const registerValidation = [
   body("rationId")
@@ -234,6 +235,35 @@ export const complaintValidation = [
       });
     }
 
+    next();
+  },
+];
+export const FeedbackValidation = [
+  body("rationId")
+    .notEmpty()
+    .withMessage("Ration Id is required")
+    .isString()
+    .matches(/^[0-9]{6}$/)
+    .withMessage("Ration Id must be 6 digits"),
+  body("rating")
+    .isString()
+    .notEmpty()
+    .withMessage("Rating is required")
+    .isIn(Object.values(Rating))
+    .withMessage(`Rating must be one of: ${Object.values(Rating).join(",  ")}`),
+  body("shopNumber")
+    .notEmpty()
+    .withMessage("Shop Number is required")
+    .isNumeric()
+    .withMessage("Shop Number is must be number"),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        errors: errors.array(),
+      });
+    }
     next();
   },
 ];

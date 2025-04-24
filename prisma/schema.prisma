@@ -48,6 +48,7 @@ model User {
   PurchaseHistory     PurchaseHistory[]
   Complaint           Complaint[]
   FPSTransaction      FPSTransaction[]
+  Feedback            Feedback[]
   Admin               Admin?               @relation(fields: [adminId], references: [id])
   adminId             String?
 }
@@ -129,11 +130,15 @@ model Complaint {
 }
 
 model Feedback {
-  id         String  @id @default(uuid())
-  userId     String?
+  id         String   @id @default(uuid())
+  rationId   String
   rating     Rating
   shopNumber Int
   message    String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [rationId], references: [rationId])
+  Admin      Admin?   @relation(fields: [adminId], references: [id])
+  adminId    String?
 }
 
 model FairPriceShop {
@@ -199,6 +204,7 @@ model Admin {
   monitoredShops    FairPriceShop[]
   handledComplaints Complaint[]
   logHistory        AdminLog[] // All actions taken by admin
+  Feedback          Feedback[]
 }
 
 model AdminLog {

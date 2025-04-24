@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AuthRequest, ComplaintBody } from "../Constants/interfaces";
+import { AuthRequest, ComplaintBody, Feedback } from "../Constants/interfaces";
 import { PrismaClient } from "@prisma/client";
 // prisma call
 const prisma = new PrismaClient();
@@ -73,9 +73,36 @@ const postComplaint = async (req: AuthRequest, res: Response): Promise<any> => {
     });
   }
 };
-const feedback = async (req: Request, res: Response) => {
+const feedback = async (req: Request, res: Response): Promise<any> => {
   try {
-    const {} = req.body;
+    const { rationId, rating, shopNumber, message }: Feedback = req.body;
+    const user = await prisma.user.findUnique({ where: { rationId } });
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const feedback = await prisma.feedback.create({
+      data: {
+        rationId,
+        rating,
+        shopNumber,
+        message,
+      },
+    });
+    if (!feedback) {
+      return res.status(400).send({
+        success: false,
+        message: "Cannot send Feedback",
+      });
+    }
+    return res.status(200).send({
+      success: true,
+      message:
+        "Thanks for your feedback. We will consider your feedback for improvement",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send({
