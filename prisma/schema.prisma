@@ -108,7 +108,7 @@ model Complaint {
   shopNumber    Int // FPS shop number
   shopOwnerName String
   shopAddress   String
-  proof         String? // URL of uploaded proof (photo/receipt)
+  proof         String[] @default([]) // URL of uploaded proof (photo/receipt)
   issueType     String // e.g., "Missing Ration", "Overcharging", "Corruption"
   description   String
   status        String   @default("pending") // pending, resolved, rejected

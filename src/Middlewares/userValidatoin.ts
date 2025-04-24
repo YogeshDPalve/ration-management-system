@@ -198,12 +198,12 @@ export const addResetOtpValidation = [
   },
 ];
 export const complaintValidation = [
-  body("userName").isString().notEmpty().withMessage("User's name is required"),
+  body("userName").notEmpty().withMessage("User's name is required"),
 
   body("rationId")
-    .isString()
     .notEmpty()
     .withMessage("Ration Id is required")
+    .isString()
     .matches(/^[0-9]{6}$/)
     .withMessage("Ration Id must be 6 digits"),
 
@@ -220,9 +220,6 @@ export const complaintValidation = [
     .isString()
     .notEmpty()
     .withMessage("Shop address is required"),
-  body("proof")
-    .notEmpty()
-    .withMessage("Image/video or file is required as proof"),
 
   body("issueType").isString().notEmpty().withMessage("Issue type is required"),
   body("description")
