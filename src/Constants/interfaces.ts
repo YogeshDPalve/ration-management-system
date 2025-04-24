@@ -52,6 +52,15 @@ interface VerifyOtp {
   mobileNo: string;
   otp: string;
 }
+interface ComplaintBody {
+  userName: string;
+  rationId: string;
+  shopNumber: number;
+  shopOwnerName: string;
+  shopAddress: string;
+  issueType: string;
+  description: string;
+}
 export {
   CheckRegReqBody,
   CheckLoginReqBody,
@@ -60,4 +69,5 @@ export {
   OtpToken,
   VerifyOtp,
   VerifyResetOtp,
+  ComplaintBody,
 };

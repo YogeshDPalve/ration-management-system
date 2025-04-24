@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AuthRequest } from "../Constants/interfaces";
+import { AuthRequest, ComplaintBody } from "../Constants/interfaces";
 import { PrismaClient } from "@prisma/client";
 // prisma call
 const prisma = new PrismaClient();
@@ -14,16 +14,17 @@ const postComplaint = async (req: AuthRequest, res: Response): Promise<any> => {
       shopAddress,
       issueType,
       description,
-    } = req.body;
+    }: ComplaintBody = req.body;
     //array of uploaded images as proof
-    const fairShopNumber = Number(shopNumber);
+    const fairShopNumber: number = Number(shopNumber);
     const proof = req.files as Express.Multer.File[];
-
-    if (!proof) {
-      return res.status(400).send("No file uploaded.");
+    if (proof.length === 0) {
+      return res
+        .status(400)
+        .send({ success: false, message: "No file uploaded." });
     }
     // extracting the file names
-    const fileNames = proof.map((file) => file.filename);
+    const fileNames: string[] = proof.map((file) => file.filename);
     //Users rationId
     const userId: string = req.info?.rationId || "";
     if (!userId) {
@@ -72,5 +73,15 @@ const postComplaint = async (req: AuthRequest, res: Response): Promise<any> => {
     });
   }
 };
-
-export { postComplaint };
+const feedback = async (req: Request, res: Response) => {
+  try {
+    const {} = req.body;
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Internal server error to send feedback",
+    });
+  }
+};
+export { postComplaint, feedback };
