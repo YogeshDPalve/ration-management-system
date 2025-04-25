@@ -246,9 +246,9 @@ export const FeedbackValidation = [
     .matches(/^[0-9]{6}$/)
     .withMessage("Ration Id must be 6 digits"),
   body("rating")
-    .isString()
     .notEmpty()
     .withMessage("Rating is required")
+    .isString()
     .isIn(Object.values(Rating))
     .withMessage(`Rating must be one of: ${Object.values(Rating).join(",  ")}`),
   body("shopNumber")

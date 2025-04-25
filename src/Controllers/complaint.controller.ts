@@ -18,7 +18,8 @@ const postComplaint = async (req: AuthRequest, res: Response): Promise<any> => {
     //array of uploaded images as proof
     const fairShopNumber: number = Number(shopNumber);
     const proof = req.files as Express.Multer.File[];
-    if (proof.length === 0) {
+    console.log(proof);
+    if (!proof || proof.length === 0) {
       return res
         .status(400)
         .send({ success: false, message: "No file uploaded." });
@@ -53,12 +54,7 @@ const postComplaint = async (req: AuthRequest, res: Response): Promise<any> => {
         proof: fileNames,
       },
     });
-    if (!complaint) {
-      return res.status(400).send({
-        success: false,
-        message: "Complaint not send",
-      });
-    }
+
     res.status(200).send({
       success: true,
       message:
