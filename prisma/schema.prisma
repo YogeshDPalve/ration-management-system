@@ -10,6 +10,14 @@ enum Gender {
   OTHER
 }
 
+enum Rating {
+  WORSE
+  BAD
+  OK
+  GOOD
+  EXCELLENT
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -40,6 +48,9 @@ model User {
   PurchaseHistory     PurchaseHistory[]
   Complaint           Complaint[]
   FPSTransaction      FPSTransaction[]
+  Feedback            Feedback[]
+  Admin               Admin?               @relation(fields: [adminId], references: [id])
+  adminId             String?
 }
 
 model FamilyMembers {
@@ -100,17 +111,34 @@ model PurchaseHistory {
 }
 
 model Complaint {
-  id          String   @id @default(uuid())
-  rationId    String
-  shopNumber  Int // FPS shop number
-  issueType   String // e.g., "Missing Ration", "Overcharging", "Corruption"
-  description String
-  proof       String? // URL of uploaded proof (photo/receipt)
-  status      String   @default("pending") // pending, resolved, rejected
-  createdAt   DateTime @default(now())
+  id            String   @id @default(uuid())
+  userName      String
+  rationId      String
+  shopNumber    Int // FPS shop number
+  shopOwnerName String
+  shopAddress   String
+  proof         String[] @default([]) // URL of uploaded proof (photo/receipt)
+  issueType     String // e.g., "Missing Ration", "Overcharging", "Corruption"
+  description   String
+  status        String   @default("pending") // pending, resolved, rejected
+  createdAt     DateTime @default(now())
 
   // Relation with User
-  user User @relation(fields: [rationId], references: [rationId])
+  user    User    @relation(fields: [rationId], references: [rationId])
+  Admin   Admin?  @relation(fields: [adminId], references: [id])
+  adminId String?
+}
+
+model Feedback {
+  id         String   @id @default(uuid())
+  rationId   String
+  rating     Rating
+  shopNumber Int
+  message    String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [rationId], references: [rationId])
+  Admin      Admin?   @relation(fields: [adminId], references: [id])
+  adminId    String?
 }
 
 model FairPriceShop {
@@ -127,6 +155,8 @@ model FairPriceShop {
   lastUpdated          DateTime               @updatedAt
   FPSTransaction       FPSTransaction[]
   GovernmentMonitoring GovernmentMonitoring[]
+  Admin                Admin?                 @relation(fields: [adminId], references: [id])
+  adminId              String?
 }
 
 model FPSTransaction {
@@ -157,4 +187,34 @@ model GovernmentMonitoring {
 
   // Relation with FPS
   shop FairPriceShop @relation(fields: [shopNumber], references: [shopNumber])
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  contact   String
+  role      String   @default("admin") // admin, super-admin, monitoring-officer, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Admin privileges
+  viewedUsers       User[]
+  monitoredShops    FairPriceShop[]
+  handledComplaints Complaint[]
+  logHistory        AdminLog[] // All actions taken by admin
+  Feedback          Feedback[]
+}
+
+model AdminLog {
+  id          String   @id @default(uuid())
+  adminId     String
+  action      String // e.g., "Updated quota", "Blacklisted shop", "Viewed complaint"
+  targetId    String // ID of affected entity (user/shop/complaint/etc.)
+  targetType  String // e.g., "User", "FairPriceShop", "Complaint"
+  description String
+  timestamp   DateTime @default(now())
+
+  admin Admin @relation(fields: [adminId], references: [id])
 }

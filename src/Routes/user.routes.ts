@@ -48,7 +48,7 @@ router.post(
   authUserMiddleware,
   verifyOtp
 );
-router.post("/logout", authUserMiddleware, authOtpMiddleare, logoutUser);
+router.get("/logout", authUserMiddleware, authOtpMiddleare, logoutUser);
 router.put(
   "/reset-password",
   addResetOtpValidation as ValidationChain[],

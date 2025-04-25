@@ -52,6 +52,26 @@ interface VerifyOtp {
   mobileNo: string;
   otp: string;
 }
+interface ComplaintBody {
+  userName: string;
+  rationId: string;
+  shopNumber: number;
+  shopOwnerName: string;
+  shopAddress: string;
+  issueType: string;
+  description: string;
+}
+export enum Rating {
+  WORSE = "WORSE",
+  BAD = "BAD",
+  OK = "OK",
+  GOOD = "GOOD",
+  EXCELLENT = "EXCELLENT",
+}
+type Feedback = Pick<ComplaintBody, "rationId" | "shopNumber"> & {
+  rating: Rating;
+  message: string;
+};
 export {
   CheckRegReqBody,
   CheckLoginReqBody,
@@ -60,4 +80,6 @@ export {
   OtpToken,
   VerifyOtp,
   VerifyResetOtp,
+  ComplaintBody,
+  Feedback,
 };

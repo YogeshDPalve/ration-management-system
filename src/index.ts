@@ -7,6 +7,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import userRoutes from "./Routes/user.routes";
 import familyRoutes from "./Routes/family.routes";
+import complaintRoutes from "./Routes/complaint.routes";
 // configure dotenv
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(cookieParser());
 // generating routes
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/family-member", familyRoutes);
+app.use("/api/v1/report", complaintRoutes);
 
 // importing some data from .env file
 const port = process.env.PORT;

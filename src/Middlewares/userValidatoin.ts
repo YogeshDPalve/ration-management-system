@@ -1,5 +1,6 @@
 import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
+import { Rating } from "../Constants/interfaces";
 
 export const registerValidation = [
   body("rationId")
@@ -172,16 +173,18 @@ export const addResetOtpValidation = [
     .isString()
     .notEmpty()
     .withMessage("OTP is required")
-    .matches(/^[0-9]{6}$/) 
+    .matches(/^[0-9]{6}$/)
     .withMessage("OTP must be 6 digit"),
-  
+
   body("password")
     .isString()
+    .notEmpty()
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long"),
 
   body("confirmPassword")
     .isString()
+    .notEmpty()
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long"),
   (req: Request, res: Response, next: NextFunction) => {
@@ -192,6 +195,75 @@ export const addResetOtpValidation = [
       });
     }
 
+    next();
+  },
+];
+export const complaintValidation = [
+  body("userName").notEmpty().withMessage("User's name is required"),
+
+  body("rationId")
+    .notEmpty()
+    .withMessage("Ration Id is required")
+    .isString()
+    .matches(/^[0-9]{6}$/)
+    .withMessage("Ration Id must be 6 digits"),
+
+  body("shopNumber")
+    .isNumeric()
+    .notEmpty()
+    .withMessage("Shop Number is required"),
+
+  body("shopOwnerName")
+    .isString()
+    .notEmpty()
+    .withMessage("Shop Owner Name is required"),
+  body("shopAddress")
+    .isString()
+    .notEmpty()
+    .withMessage("Shop address is required"),
+
+  body("issueType").isString().notEmpty().withMessage("Issue type is required"),
+  body("description")
+    .isString()
+    .notEmpty()
+    .withMessage("Please provide detailed description"),
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        errors: errors.array(),
+      });
+    }
+
+    next();
+  },
+];
+export const FeedbackValidation = [
+  body("rationId")
+    .notEmpty()
+    .withMessage("Ration Id is required")
+    .isString()
+    .matches(/^[0-9]{6}$/)
+    .withMessage("Ration Id must be 6 digits"),
+  body("rating")
+    .notEmpty()
+    .withMessage("Rating is required")
+    .isString()
+    .isIn(Object.values(Rating))
+    .withMessage(`Rating must be one of: ${Object.values(Rating).join(",  ")}`),
+  body("shopNumber")
+    .notEmpty()
+    .withMessage("Shop Number is required")
+    .isNumeric()
+    .withMessage("Shop Number is must be number"),
+
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).send({
+        errors: errors.array(),
+      });
+    }
     next();
   },
 ];
