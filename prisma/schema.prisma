@@ -87,8 +87,9 @@ model RationAllotment {
 model RationNotification {
   id        String   @id @default(uuid())
   rationId  String
+  type      String
   message   String
-  status    String   @default("pending") // pending, sent, seen
+  isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
   // Relation with User
