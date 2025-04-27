@@ -51,13 +51,12 @@ const allotRation = async (req: Request, res: Response) => {
       daalQuota,
       oilQuota,
     }: AllotRation = req.body;
-     
 
     const checkUser = await prisma.user.findUnique({
       where: { rationId },
     });
     if (!checkUser) {
-      return res.status(400).send({
+      return res.status(404).send({
         success: false,
         message: "Provided ration id is invalid",
       });
@@ -77,13 +76,14 @@ const allotRation = async (req: Request, res: Response) => {
     const sendNotification = await prisma.rationNotification.create({
       data: {
         rationId,
-        
-      }
-    })
+        type: "Allocation",
+        message: "Monthly allotment for next month has been assigned.",
+      },
+    });
     return res.status(201).send({
       success: true,
       message: "Ration allotted successfully",
-      data: rationAllot,
+      data: { rationAllot, sendNotification },
     });
   } catch (error) {
     console.log(error);
