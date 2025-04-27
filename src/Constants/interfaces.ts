@@ -72,6 +72,16 @@ type Feedback = Pick<ComplaintBody, "rationId" | "shopNumber"> & {
   rating: Rating;
   message: string;
 };
+
+export interface purchaseHistoryBody {
+  rationId: string;
+  wheatPurchased: number;
+  ricePurchased: number;
+  sugarPurchased: number;
+  daalPurchased: number;
+  oilPurchased: number;
+  fpsShopNumber: number;
+}
 export {
   CheckRegReqBody,
   CheckLoginReqBody,

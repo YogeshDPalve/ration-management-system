@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import userRoutes from "./Routes/user.routes";
 import familyRoutes from "./Routes/family.routes";
 import complaintRoutes from "./Routes/complaint.routes";
+import rationRoutes from "./Routes/ration.routes";
 // configure dotenv
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use(cookieParser());
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/family-member", familyRoutes);
 app.use("/api/v1/report", complaintRoutes);
+app.use("/api/v1/ration", rationRoutes);
 
 // importing some data from .env file
 const port = process.env.PORT;

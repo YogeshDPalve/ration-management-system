@@ -12,3 +12,11 @@ router.get(
   authOtpMiddleare,
   getRationDetails
 );
+router.post(
+  "/purchase-ration",
+  authUserMiddleware,
+  authOtpMiddleare,
+  getRationDetails
+);
+
+export default router;
