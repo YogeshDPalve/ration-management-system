@@ -7,3 +7,8 @@ export type AllotRation = {
   daalQuota: number;
   oilQuota: number;
 };
+export type NotificationsData = {
+  rationId: string;
+  type: string;
+  message: string;
+};

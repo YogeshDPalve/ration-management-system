@@ -72,7 +72,7 @@ type Feedback = Pick<ComplaintBody, "rationId" | "shopNumber"> & {
   rating: Rating;
   message: string;
 };
-
+type ShopNumber = Pick<ComplaintBody, "shopNumber">;
 export interface purchaseHistoryBody {
   rationId: string;
   wheatPurchased: number;
@@ -92,4 +92,5 @@ export {
   VerifyResetOtp,
   ComplaintBody,
   Feedback,
+  ShopNumber,
 };

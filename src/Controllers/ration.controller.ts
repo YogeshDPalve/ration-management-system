@@ -1,44 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { purchaseHistoryBody } from "../Constants/interfaces";
-import { AllotRation } from "../Constants/types";
+import { purchaseHistoryBody, ShopNumber } from "../Constants/interfaces";
+import { AllotRation, NotificationsData } from "../Constants/types";
 
 // create instance of prisma
 const prisma = new PrismaClient();
-
-// get ration details controller
-const getRationDetails = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const { rationId } = req.body;
-    if (!rationId) {
-      return res.status(400).send({
-        success: false,
-        message: "could not find user",
-      });
-    }
-
-    const rationData = await prisma.rationAllotment.findUnique({
-      where: { rationId },
-    });
-    if (!rationData) {
-      return res.status(500).send({
-        success: false,
-        message: "Ration data not found for this ration id",
-      });
-    }
-    return res.status(200).send({
-      success: true,
-      message: "Ration Details fetched successfully",
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({
-      success: false,
-      message: "Internal server error to get ration details",
-      error,
-    });
-  }
-};
 
 // allot ration details controller
 const allotRation = async (req: Request, res: Response) => {
@@ -95,7 +61,7 @@ const allotRation = async (req: Request, res: Response) => {
   }
 };
 
-const rationPurchased = async (req: Request, res: Response) => {
+const purchaseRation = async (req: Request, res: Response) => {
   try {
     const {
       rationId,
@@ -141,5 +107,40 @@ const rationPurchased = async (req: Request, res: Response) => {
   }
 };
 
-export { getRationDetails, allotRation, rationPurchased };
-8;
+const sendNotificationOfPickup = async (req: Request, res: Response) => {
+  try {
+    const { shopNumber }: ShopNumber = req.body;
+    const users = await prisma.user.findMany({
+      where: { fairPriceShopNumber: shopNumber },
+    });
+
+    if (users.length === 0) {
+      return res.status(404).send({
+        success: false,
+        message: "No users found for the given shop number",
+      });
+    }
+    const notificationsData: NotificationsData[] = users.map((user) => ({
+      rationId: user.rationId,
+      type: "Pickup",
+      message: "Your ration for this month is ready for pickup!",
+    }));
+    const sendNotification = await prisma.rationNotification.createMany({
+      data: notificationsData,
+    });
+
+    return res.status(201).send({
+      success: true,
+      message: "Pickup notifications send successfully to all users",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      success: false,
+      message: "Failed to send the pickup notification",
+      error,
+    });
+  }
+};
+
+export { allotRation, purchaseRation, sendNotificationOfPickup };
