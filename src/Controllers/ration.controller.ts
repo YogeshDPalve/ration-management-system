@@ -6,7 +6,7 @@ import { AllotRation, NotificationsData } from "../Constants/types";
 // create instance of prisma
 const prisma = new PrismaClient();
 
-// allot ration details controller
+// ration allocation to user and send notification of it
 const allotRation = async (req: Request, res: Response) => {
   try {
     const {
@@ -61,6 +61,7 @@ const allotRation = async (req: Request, res: Response) => {
   }
 };
 
+// ration purchase
 const purchaseRation = async (req: Request, res: Response) => {
   try {
     const {
@@ -107,6 +108,7 @@ const purchaseRation = async (req: Request, res: Response) => {
   }
 };
 
+// send notification of ration pickup to every user of fair price shop
 const sendNotificationOfPickup = async (req: Request, res: Response) => {
   try {
     const { shopNumber }: ShopNumber = req.body;
