@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { purchaseHistoryBody, ShopNumber } from "../Constants/interfaces";
 import { AllotRation, NotificationsData } from "../Constants/types";
+import { currentMonthName } from "../Constants/others";
 
 // create instance of prisma
 const prisma = new PrismaClient();
@@ -74,30 +75,55 @@ const purchaseRation = async (req: Request, res: Response) => {
       fpsShopNumber,
     }: purchaseHistoryBody = req.body;
 
-    const checkUser = await prisma.user.findUnique({ where: { rationId } });
-    if (!checkUser) {
-      return res.status(400).send({
-        success: false,
-        message: "User Not found",
-      });
-    }
+    // calculate total purchased ammount of ration (KG)
+    const totalAmount = [
+      wheatPurchased,
+      ricePurchased,
+      daalPurchased,
+      sugarPurchased,
+      oilPurchased,
+    ].reduce((sum, value) => sum + value, 0);
 
-    const purchaseData = await prisma.purchaseHistory.create({
-      data: {
-        rationId,
-        wheatPurchased,
-        ricePurchased,
-        sugarPurchased,
-        daalPurchased,
-        oilPurchased,
-        fpsShopNumber,
-      },
-    });
-
-    res.status(200).send({
+    // add queries in transaction that both run successfully or none of them
+    const [purchaseData, fpsTransaction, sendPurchaseNotification] =
+      await prisma.$transaction([
+        prisma.purchaseHistory.create({
+          data: {
+            rationId,
+            wheatPurchased,
+            ricePurchased,
+            sugarPurchased,
+            daalPurchased,
+            oilPurchased,
+            fpsShopNumber,
+          },
+        }),
+        prisma.fPSTransaction.create({
+          data: {
+            rationId,
+            shopNumber: fpsShopNumber,
+            wheatBought: wheatPurchased,
+            riceBought: ricePurchased,
+            sugarBought: sugarPurchased,
+            daalBought: daalPurchased,
+            oilBought: oilPurchased,
+            totalAmount,
+          },
+        }),
+        prisma.rationNotification.create({
+          data: {
+            rationId,
+            type: "Pickup Confirmation",
+            message: `Ration for ${currentMonthName} has been purchased and picked up successfully`,
+          },
+        }),
+      ]);
+    res.status(201).send({
       success: true,
-      message: "Ration purchased successfully",
+      message: "Purchase and notification created successfully",
       purchaseData,
+      fpsTransaction,
+      sendPurchaseNotification,
     });
   } catch (error) {
     console.log(error);

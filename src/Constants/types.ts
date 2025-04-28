@@ -12,3 +12,16 @@ export type NotificationsData = {
   type: string;
   message: string;
 };
+
+export type GrainsLimit = {
+  wheatQuota: number;
+  riceQuota: number;
+  sugarQuota: number;
+  daalQuota: number;
+  oilQuota: number;
+  wheatUsed: number;
+  riceUsed: number;
+  sugarUsed: number;
+  daalUsed: number;
+  oilUsed: number;
+};
