@@ -4,7 +4,7 @@ import { FpsRegister } from "../Constants/types";
 
 const prisma = new PrismaClient();
 // fair price shop login controller
-export const fpsLogin = async (req: Request, res: Response) => {
+export const fpsLogin = async (req: Request, res: Response): Promise<any> => {
   try {
     const { shopNumber, contact }: { shopNumber: number; contact: string } =
       req.body;
@@ -30,7 +30,10 @@ export const fpsLogin = async (req: Request, res: Response) => {
   }
 };
 // fair price shop register controller
-export const fpsRegister = async (req: Request, res: Response) => {
+export const fpsRegister = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const { shopNumber, location, ownerName, contact }: FpsRegister = req.body;
 
