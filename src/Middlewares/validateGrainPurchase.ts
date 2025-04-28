@@ -18,7 +18,6 @@ export const validateGrainPurchase = async (
       sugarPurchased,
       daalPurchased,
       oilPurchased,
-      fpsShopNumber,
     }: purchaseHistoryBody = req.body;
 
     // check user exists

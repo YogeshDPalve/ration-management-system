@@ -2,13 +2,13 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { purchaseHistoryBody, ShopNumber } from "../Constants/interfaces";
 import { AllotRation, NotificationsData } from "../Constants/types";
-import { currentMonthName } from "../Constants/others";
+import { currentMonth, currentMonthName } from "../Constants/others";
 
 // create instance of prisma
 const prisma = new PrismaClient();
 
 // ration allocation to user and send notification of it
-const allotRation = async (req: Request, res: Response) => {
+const allotRation = async (req: Request, res: Response): Promise<any> => {
   try {
     const {
       rationId,
@@ -19,6 +19,7 @@ const allotRation = async (req: Request, res: Response) => {
       oilQuota,
     }: AllotRation = req.body;
 
+    // check user exists or not
     const checkUser = await prisma.user.findUnique({
       where: { rationId },
     });
@@ -29,29 +30,44 @@ const allotRation = async (req: Request, res: Response) => {
       });
     }
 
-    const rationAllot = await prisma.rationAllotment.create({
-      data: {
+    // check if user exists in ration allocation
+    const ration = await prisma.rationAllotment.findUnique({
+      where: { rationId },
+    });
+
+    // if user not exists create new allocation of ration
+    if (!ration) {
+      createRationAllotment(
         rationId,
         wheatQuota,
         riceQuota,
         sugarQuota,
         daalQuota,
         oilQuota,
-      },
-    });
+        res
+      );
+    }
 
-    const sendNotification = await prisma.rationNotification.create({
-      data: {
-        rationId,
-        type: "Allocation",
-        message: "Monthly allotment for next month has been assigned.",
-      },
-    });
-    return res.status(201).send({
-      success: true,
-      message: "Ration allotted successfully",
-      data: { rationAllot, sendNotification },
-    });
+    const date = new Date(ration?.updatedAt || "");
+    const month = date.getMonth() + 1;
+
+    // cannot update ration allocation if it allocated for current month
+    if (currentMonth === month) {
+      return res.status(400).send({
+        success: false,
+        message: "You cannot update data untill next month.",
+      });
+    }
+    // update ration allocation if user exists
+    updateRationAllotment(
+      rationId,
+      wheatQuota,
+      riceQuota,
+      sugarQuota,
+      daalQuota,
+      oilQuota,
+      res
+    );
   } catch (error) {
     console.log(error);
     return res.status(500).send({
@@ -160,6 +176,7 @@ const sendNotificationOfPickup = async (req: Request, res: Response) => {
     return res.status(201).send({
       success: true,
       message: "Pickup notifications send successfully to all users",
+      sendNotification,
     });
   } catch (error) {
     console.log(error);
@@ -172,3 +189,87 @@ const sendNotificationOfPickup = async (req: Request, res: Response) => {
 };
 
 export { allotRation, purchaseRation, sendNotificationOfPickup };
+
+  
+//* ---------------------------------------------------------
+  
+// create new ration if user not exists
+const createRationAllotment = async (
+  rationId: string,
+  wheatQuota: number,
+  riceQuota: number,
+  sugarQuota: number,
+  daalQuota: number,
+  oilQuota: number,
+  res: Response
+) => {
+  try {
+    const rationAllot = await prisma.rationAllotment.create({
+      data: {
+        rationId,
+        wheatQuota,
+        riceQuota,
+        sugarQuota,
+        daalQuota,
+        oilQuota,
+      },
+    });
+
+    const sendNotification = await prisma.rationNotification.create({
+      data: {
+        rationId,
+        type: "Allocation",
+        message: "Monthly allotment for next month has been assigned.",
+      },
+    });
+    return res.status(201).send({
+      success: true,
+      message: "Ration allotted successfully",
+      data: { rationAllot, sendNotification },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      success: false,
+      message: "Failed to allot ration details",
+      error,
+    });
+  }
+};
+// update existing ration if user exists
+const updateRationAllotment = async (
+  rationId: string,
+  wheatQuota: number,
+  riceQuota: number,
+  sugarQuota: number,
+  daalQuota: number,
+  oilQuota: number,
+  res: Response
+) => {
+  try {
+    const rationAllot = await prisma.rationAllotment.update({
+      where: { rationId },
+      data: { wheatQuota, riceQuota, sugarQuota, daalQuota, oilQuota },
+    });
+
+    const sendNotification = await prisma.rationNotification.create({
+      data: {
+        rationId,
+        type: "Allocation",
+        message: "Monthly allotment for next month has been assigned.",
+      },
+    });
+    return res.status(201).send({
+      success: true,
+      message: "Ration allotted successfully",
+      data: { rationAllot, sendNotification },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      success: false,
+      message: "Failed to allot ration details",
+      error,
+    });
+  }
+};

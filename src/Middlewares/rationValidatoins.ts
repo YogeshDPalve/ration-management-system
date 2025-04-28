@@ -9,11 +9,11 @@ export const rationAllotmentValidation = [
     .isLength({ min: 6 })
     .withMessage("Ration ID must be at least 6 characters long"),
 
-  body("adminEmail")
-    .isEmail()
-    .notEmpty()
-    .isString()
-    .withMessage("Admin email is required"),
+  // body("adminEmail")
+  //   .isEmail()
+  //   .notEmpty()
+  //   .isString()
+  //   .withMessage("Admin email is required"),
 
   body("wheatQuota")
     .notEmpty()

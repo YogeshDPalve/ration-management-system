@@ -49,8 +49,7 @@ model User {
   Complaint           Complaint[]
   FPSTransaction      FPSTransaction[]
   Feedback            Feedback[]
-  Admin               Admin?               @relation(fields: [adminId], references: [id])
-  adminId             String?
+  AllotmentHistory    AllotmentHistory[]
 }
 
 model FamilyMembers {
@@ -81,6 +80,21 @@ model RationAllotment {
   createdAt  DateTime @default(now())
 
   // Relation with User
+  user User @relation(fields: [rationId], references: [rationId])
+}
+
+model AllotmentHistory {
+  id         String   @id @default(uuid())
+  rationId   String
+  wheatQuota Int
+  riceQuota  Int
+  sugarQuota Int
+  daalQuota  Int
+  oilQuota   Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relation with the User model
   user User @relation(fields: [rationId], references: [rationId])
 }
 
@@ -200,8 +214,7 @@ model Admin {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Admin privileges
-  viewedUsers       User[]
+  // Admin privileges 
   monitoredShops    FairPriceShop[]
   handledComplaints Complaint[]
   logHistory        AdminLog[] // All actions taken by admin
