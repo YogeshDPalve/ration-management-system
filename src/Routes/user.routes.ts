@@ -22,38 +22,38 @@ import {
   authUserMiddleware,
 } from "../Middlewares/authMiddleware";
 
-const router = Router();
+const route = Router();
 
-router.post(
+route.post(
   "/register",
   registerValidation as ValidationChain[],
   checkUnique,
   registerUser
 );
-router.post("/login", loginValidation as ValidationChain[], loginUser);
-router.post(
+route.post("/login", loginValidation as ValidationChain[], loginUser);
+route.post(
   "/generate-login-otp",
   rationIdValidation as ValidationChain[],
   authUserMiddleware,
   generateOtp
 );
-router.post(
+route.post(
   "/generate-reset-otp",
   rationIdValidation as ValidationChain[],
   generateOtp
 );
-router.post(
+route.post(
   "/verify-otp",
   addOtpValidation as ValidationChain[],
   authUserMiddleware,
   verifyOtp
 );
-router.get("/logout", authUserMiddleware, authOtpMiddleare, logoutUser);
-router.put(
+route.get("/logout", authUserMiddleware, authOtpMiddleare, logoutUser);
+route.put(
   "/reset-password",
   addResetOtpValidation as ValidationChain[],
   verifyResetOtp
 );
-router.get("/get-user-info", authUserMiddleware, authOtpMiddleare, getUserInfo);
+route.get("/get-user-info", authUserMiddleware, authOtpMiddleare, getUserInfo);
 
-export default router;
+export default route;

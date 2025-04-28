@@ -8,14 +8,20 @@ import { rationAllotmentValidation } from "../Middlewares/rationValidatoins";
 import { ValidationChain } from "express-validator";
 import { validateGrainPurchase } from "../Middlewares/validateGrainPurchase";
 // import { purchaseRation } from "../Controllers/ration.controller";
-const router = Router();
+const route = Router();
 
-router.get("/get-ration-details", authUserMiddleware, authOtpMiddleare);
-router.post("/purchase-ration", authUserMiddleware, authOtpMiddleare, validateGrainPurchase, purchaseRation);
-router.post(
+route.get("/get-ration-details", authUserMiddleware, authOtpMiddleare);
+route.post(
+  "/purchase-ration",
+  authUserMiddleware,
+  authOtpMiddleare,
+  validateGrainPurchase,
+  purchaseRation
+);
+route.post(
   "/ration-allocation",
   rationAllotmentValidation as ValidationChain[],
   allotRation
 );
 
-export default router;
+export default route;

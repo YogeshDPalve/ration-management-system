@@ -7,10 +7,10 @@ import {
 import { addFamilyMember } from "../Controllers/family.controller";
 import { addFamilyMemberValidation } from "../Middlewares/userValidatoin";
 import { ValidationChain } from "express-validator";
-const router = Router();
+const route = Router();
 
 // add single family member
-router.post(
+route.post(
   "/add-member",
   authUserMiddleware,
   authOtpMiddleare,
@@ -18,4 +18,4 @@ router.post(
   addFamilyMember
 );
 
-export default router;
+export default route;
