@@ -9,7 +9,7 @@ export const validateGrainPurchase = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<any> => {
   try {
     const {
       rationId,

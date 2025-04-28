@@ -25,3 +25,10 @@ export type GrainsLimit = {
   daalUsed: number;
   oilUsed: number;
 };
+
+export type FpsRegister = {
+  shopNumber: number;
+  location: string;
+  ownerName: string;
+  contact: string;
+};

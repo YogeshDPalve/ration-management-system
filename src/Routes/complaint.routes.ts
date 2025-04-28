@@ -12,7 +12,7 @@ import { ValidationChain } from "express-validator";
 import { feedback, postComplaint } from "../Controllers/complaint.controller";
 import path from "path";
 
-const router = Router();
+const route = Router();
 
 // Set storage engine
 const storage = multer.diskStorage({
@@ -31,7 +31,7 @@ const upload = multer({
   limits: { fileSize: 5000000 }, // Limit file size to 5MB
 });
 
-router.post(
+route.post(
   "/complaint",
   upload.array("proof", 5),
   complaintValidation as ValidationChain[],
@@ -40,11 +40,11 @@ router.post(
   postComplaint
 );
 
-router.post(
+route.post(
   "/feedback",
   FeedbackValidation as ValidationChain[],
   authUserMiddleware,
   authOtpMiddleare,
   feedback
 );
-export default router;
+export default route;
