@@ -13,7 +13,9 @@ const monthNames = [
   "November",
   "December",
 ];
-const currentMonthName = monthNames[d.getMonth() + 1];
+export const currentMonth = d.getMonth() + 1;
+export const currentMonthName = monthNames[d.getMonth()];
+export const nextMonthName = monthNames[d.getMonth() + 1];
 
 export const notificationType = {
   allotment: {
