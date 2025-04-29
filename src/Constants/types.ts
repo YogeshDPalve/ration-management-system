@@ -32,3 +32,11 @@ export type FpsRegister = {
   ownerName: string;
   contact: string;
 };
+
+export type AdminRegister = {
+  name: string;
+  email: string;
+  password: string;
+  contact: string;
+};
+export type AdminLogin = Pick<AdminRegister, "email" | "password">;
