@@ -10,6 +10,7 @@ import familyRoutes from "./Routes/family.routes";
 import complaintRoutes from "./Routes/complaint.routes";
 import rationRoutes from "./Routes/ration.routes";
 import fpsRoutes from "./Routes/fps.routes";
+import adminRoutes from "./Routes/admin.routes";
 // configure dotenv
 dotenv.config();
 
@@ -32,7 +33,7 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/family-member", familyRoutes);
 app.use("/api/v1/report", complaintRoutes);
 app.use("/api/v1/ration", rationRoutes);
-app.use("/api/v1/fps", fpsRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 // importing some data from .env file
 const port = process.env.PORT;

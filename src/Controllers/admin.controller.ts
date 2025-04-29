@@ -5,7 +5,11 @@ import bcrypt from "bcryptjs";
 import { generateAdminToken } from "../Utils/generateToken";
 const prisma = new PrismaClient();
 
-export const adminRegister = async (req: Request, res: Response) => {
+// admin register controller
+export const adminRegister = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const { name, email, password, contact }: AdminRegister = req.body;
     if (!name || !email || !password || !contact) {
@@ -44,7 +48,9 @@ export const adminRegister = async (req: Request, res: Response) => {
     });
   }
 };
-export const adminLogin = async (req: Request, res: Response) => {
+
+// admin login controller
+export const adminLogin = async (req: Request, res: Response): Promise<any> => {
   try {
     const { email, password }: AdminLogin = req.body;
 
