@@ -34,6 +34,7 @@ app.use("/api/v1/family-member", familyRoutes);
 app.use("/api/v1/report", complaintRoutes);
 app.use("/api/v1/ration", rationRoutes);
 app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/fps", fpsRoutes);
 
 // importing some data from .env file
 const port = process.env.PORT;

@@ -162,6 +162,7 @@ model FairPriceShop {
   ownerName            String
   location             String
   contact              String
+  password             String
   stockWheat           Int                    @default(0)
   stockRice            Int                    @default(0)
   stockSugar           Int                    @default(0)

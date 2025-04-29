@@ -80,7 +80,7 @@ export const generateOtpToken = async (
 
 // ! Admin / FPS
 export const generateAdminToken = async (
-  data: any,
+  data: number | string,
   res: Response
 ): Promise<any> => {
   try {
@@ -112,4 +112,3 @@ export const generateAdminToken = async (
     });
   }
 };
- 
