@@ -19,27 +19,32 @@ export const rationAllotmentValidation = [
     .notEmpty()
     .withMessage("Wheat Quota is required")
     .isInt({ gt: 0 })
+    .toInt()
     .withMessage("Wheat Quota must be an integer greater than 0"),
 
   body("riceQuota")
     .notEmpty()
     .withMessage("Rice Quota is required")
     .isInt({ gt: 0 })
+    .toInt()
     .withMessage("Rice Quota must be an integer greater than 0"),
   body("sugarQuota")
     .notEmpty()
     .withMessage("Sugar Quota is required")
     .isInt({ gt: 0 })
+    .toInt()
     .withMessage("Sugar Quota must be an integer greater than 0"),
   body("daalQuota")
     .notEmpty()
     .withMessage("Daal Quota is required")
     .isInt({ gt: 0 })
+    .toInt()
     .withMessage("Daal Quota must be an integer greater than 0"),
   body("oilQuota")
     .notEmpty()
     .withMessage("Oil Quota is required")
     .isInt({ gt: 0 })
+    .toInt()
     .withMessage("Oil Quota must be an integer greater than 0"),
 
   // Middleware to check validation results

@@ -31,4 +31,13 @@ export type FpsRegister = {
   location: string;
   ownerName: string;
   contact: string;
+  password: string;
 };
+export type FpsLogin = Pick<FpsRegister, "shopNumber" | "password">;
+export type AdminRegister = {
+  name: string;
+  email: string;
+  password: string;
+  contact: string;
+};
+export type AdminLogin = Pick<AdminRegister, "email" | "password">;

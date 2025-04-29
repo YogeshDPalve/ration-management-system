@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Response } from "express";
 
+// ! User
 export const generateToken = async (user: any, res: Response): Promise<any> => {
   try {
     const userInfo = {
@@ -39,7 +40,7 @@ export const generateToken = async (user: any, res: Response): Promise<any> => {
     });
   }
 };
-
+// ! User
 export const generateOtpToken = async (
   res: Response,
   rationId: string,
@@ -73,6 +74,41 @@ export const generateOtpToken = async (
     return res.status(500).send({
       success: false,
       message: "Internal server error in generate jwt token.",
+    });
+  }
+};
+
+// ! Admin / FPS
+export const generateAdminToken = async (
+  data: number | string,
+  res: Response
+): Promise<any> => {
+  try {
+    const jwtSecret = process.env.JWT_SECRET as string;
+
+    // generate token
+    let token = jwt.sign({ data }, jwtSecret, {
+      expiresIn: "1d",
+    });
+
+    // token with Bearer Naming convention
+    return res
+      .status(200)
+      .cookie("token", token, {
+        httpOnly: true,
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000, //! for 1 day
+      })
+      .send({
+        success: true,
+        message: "Login successfull.",
+        token,
+      });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "Internal server error in generate jwt token.",
+      error,
     });
   }
 };
