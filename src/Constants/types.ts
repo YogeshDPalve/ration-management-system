@@ -1,5 +1,5 @@
 export type AllotRation = {
-  adminEmail: string;
+  allottedBy: string;
   rationId: string;
   wheatQuota: number;
   riceQuota: number;

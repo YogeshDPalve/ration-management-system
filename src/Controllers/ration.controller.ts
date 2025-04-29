@@ -85,7 +85,7 @@ const allotRation = async (req: Request, res: Response): Promise<any> => {
 
 //! FPS Owner
 // ration purchase
-const purchaseRation = async (req: Request, res: Response):Promise<any> => { 
+const purchaseRation = async (req: Request, res: Response): Promise<any> => {
   try {
     const {
       rationId,
@@ -98,52 +98,82 @@ const purchaseRation = async (req: Request, res: Response):Promise<any> => {
     }: purchaseHistoryBody = req.body;
 
     // calculate total purchased ammount of ration (KG)
-    const totalAmount = [
-      wheatPurchased,
-      ricePurchased,
-      daalPurchased,
-      sugarPurchased,
-      oilPurchased,
-    ].reduce((sum, value) => sum + value, 0);
+    const totalAmount =
+      wheatPurchased +
+      ricePurchased +
+      daalPurchased +
+      sugarPurchased +
+      oilPurchased;
+
+    const usedGrains = await prisma.rationAllotment.findUnique({
+      where: { rationId },
+    });
+    if (!usedGrains) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Ration record not found" });
+    }
+
+    // destructure already purchased grains
+    const { wheatUsed, riceUsed, daalUsed, oilUsed, sugarUsed } = usedGrains;
 
     // add queries in transaction that both run successfully or none of them
-    const [purchaseData, fpsTransaction, sendPurchaseNotification] =
-      await prisma.$transaction([
-        prisma.purchaseHistory.create({
-          data: {
-            rationId,
-            wheatPurchased,
-            ricePurchased,
-            sugarPurchased,
-            daalPurchased,
-            oilPurchased,
-            fpsShopNumber,
-          },
-        }),
-        prisma.fPSTransaction.create({
-          data: {
-            rationId,
-            shopNumber: fpsShopNumber,
-            wheatBought: wheatPurchased,
-            riceBought: ricePurchased,
-            sugarBought: sugarPurchased,
-            daalBought: daalPurchased,
-            oilBought: oilPurchased,
-            totalAmount,
-          },
-        }),
-        prisma.rationNotification.create({
-          data: {
-            rationId,
-            type: "Pickup Confirmation",
-            message: `Ration for ${currentMonthName} has been purchased and picked up successfully`,
-          },
-        }),
-      ]);
-    res.status(201).send({
+    console.log("transaction started");
+    const [
+      purchaseData,
+      purchaseHistory,
+      fpsTransaction,
+      sendPurchaseNotification,
+    ] = await prisma.$transaction([
+      prisma.rationAllotment.update({
+        where: { rationId },
+        data: {
+          wheatUsed: wheatUsed + wheatPurchased,
+          riceUsed: riceUsed + ricePurchased,
+          sugarUsed: sugarUsed + sugarPurchased,
+          daalUsed: daalUsed + daalPurchased,
+          oilUsed: oilUsed + oilPurchased,
+        },
+      }),
+
+      prisma.purchaseHistory.create({
+        data: {
+          rationId,
+          wheatPurchased,
+          ricePurchased,
+          sugarPurchased,
+          daalPurchased,
+          oilPurchased,
+          fpsShopNumber,
+        },
+      }),
+      prisma.fPSTransaction.create({
+        data: {
+          rationId,
+          shopNumber: fpsShopNumber,
+          wheatBought: wheatPurchased,
+          riceBought: ricePurchased,
+          sugarBought: sugarPurchased,
+          daalBought: daalPurchased,
+          oilBought: oilPurchased,
+          totalAmount,
+        },
+      }),
+      prisma.rationNotification.create({
+        data: {
+          rationId,
+          type: "Pickup Confirmation",
+          message: `Ration for ${currentMonthName} has been purchased and picked up successfully`,
+        },
+      }),
+    ]);
+    console.log("transaction ended");
+   
+    return res.status(201).send({
       success: true,
       message: "Purchase and notification created successfully",
       purchaseData,
+      purchaseHistory,
       fpsTransaction,
       sendPurchaseNotification,
     });

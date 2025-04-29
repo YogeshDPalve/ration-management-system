@@ -7,8 +7,8 @@ export const registerValidation = [
     .isString()
     .notEmpty()
     .withMessage("Ration ID is required")
-    .isLength({ min: 5 })
-    .withMessage("Ration ID must be at least 5 characters long"),
+    .isLength({ min: 6 })
+    .withMessage("Ration ID must be at least 6 characters long"),
 
   body("adharcardNumber")
     .isString()
@@ -44,9 +44,11 @@ export const registerValidation = [
     .withMessage("Password must be at least 6 characters long"),
 
   body("fairPriceShopNumber")
-    .isInt()
     .notEmpty()
-    .withMessage("Fair Price Shop Number is required"),
+    .withMessage("Fair Price Shop Number is required")
+    .toInt()
+    .isInt({ gt: 0 })
+    .withMessage("Fair Price Shop Number must be positive"),
 
   // Middleware to check validation results
   (req: Request, res: Response, next: NextFunction) => {
