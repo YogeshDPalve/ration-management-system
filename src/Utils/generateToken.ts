@@ -80,12 +80,12 @@ export const generateOtpToken = async (
 
 // ! Admin
 export const generateAdminToken = async (
-  admin: string,
+  adminEmail: string,
   res: Response
 ): Promise<any> => {
   try {
     const adminInfo = {
-      email: admin,
+      email: adminEmail,
     };
     const jwtSecret = process.env.JWT_SECRET as string;
 
@@ -104,7 +104,6 @@ export const generateAdminToken = async (
       })
       .send({
         success: true,
-        adminInfo,
         message: "Login successfull.",
         token,
       });
