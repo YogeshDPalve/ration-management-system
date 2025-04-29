@@ -84,13 +84,10 @@ export const generateAdminToken = async (
   res: Response
 ): Promise<any> => {
   try {
-    const adminInfo = {
-      email: adminEmail,
-    };
     const jwtSecret = process.env.JWT_SECRET as string;
 
     // generate token
-    let token = jwt.sign({ adminInfo }, jwtSecret, {
+    let token = jwt.sign({ email: adminEmail }, jwtSecret, {
       expiresIn: "1d",
     });
 

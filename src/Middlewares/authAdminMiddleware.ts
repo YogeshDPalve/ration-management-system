@@ -1,24 +1,49 @@
-import { Request, Response, NextFunction, json } from "express";
-import jwt from "jsonwebtoken";
+import { PrismaClient } from "@prisma/client";
+import { Request, Response, NextFunction } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
 const jwtSecret = process.env.JWT_SECRET as string;
+
+const prisma = new PrismaClient();
 export const authAdminMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
-  const { token } = req.cookies;
-  if (!token) {
-    return res.status(404).send({
+): Promise<any> => {
+  try {
+    const { token } = req.cookies;
+    if (!token) {
+      return res.status(404).send({
+        success: false,
+        message: "Token not found",
+      });
+    }
+    const verify = jwt.verify(token, jwtSecret) as JwtPayload;
+    if (!verify) {
+      return res.status(404).send({
+        success: false,
+        message: "Invalid token",
+      });
+    }
+    const email: string = verify.email as string;
+
+    const checkAdmin = await prisma.admin.findUnique({ where: { email } });
+    if (!checkAdmin) {
+      return res.status(404).send({
+        success: false,
+        message: "ADmin not found with provided token",
+      });
+    }
+
+    // next();
+    return res.status(200).send({
+      success: true,
+      message: "Admin verified successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
       success: false,
-      message: "Token not found",
+      message: "Failed to auth Admin",
     });
   }
-  const verify = jwt.verify(token, jwtSecret);
-  if (!verify) {
-    return res.status(404).send({
-      success: false,
-      message: "Invalid token",
-    });
-  }
-  console.log(verify);
 };
