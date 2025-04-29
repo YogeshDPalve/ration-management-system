@@ -60,9 +60,12 @@ export const validateFPSRegistration = [
     .notEmpty()
     .withMessage("Location of shop is Required")
     .isString(),
+
   body("shopNumber")
     .notEmpty()
     .withMessage("Owner Name Required")
+    .toInt()
+    .withMessage("Fair Price Shop number must be number")
     .isInt({ gt: 0 })
     .withMessage("Fair Price Shop number must be positive number"),
 
@@ -92,7 +95,8 @@ export const validateFPSRegistration = [
 export const validateFPSLogin = [
   body("shopNumber")
     .notEmpty()
-    .withMessage("Owner Name Required")
+    .withMessage("Shop Number is Required")
+    .toInt()
     .isInt({ gt: 0 })
     .withMessage("Fair Price Shop number must be positive number"),
 

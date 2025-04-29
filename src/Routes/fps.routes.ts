@@ -1,11 +1,22 @@
 import { Router } from "express";
 import { fpsLogin, fpsRegister } from "../Controllers/fps.controller";
 import { authFPSMiddleware } from "../Middlewares/authAdminMiddleware";
+import {
+  validateFPSLogin,
+  validateFPSRegistration,
+} from "../Middlewares/adminValidationsMiddlware";
+import { ValidationChain } from "express-validator";
 
 const route = Router();
 
-route.post("/register", fpsRegister); // fair price shop register route
-route.post("/login", fpsLogin); // fair price shop login route
+// fair price shop register route
+route.post(
+  "/register",
+  validateFPSRegistration as ValidationChain[],
+  fpsRegister
+);
+// fair price shop login route
+route.post("/login", validateFPSLogin as ValidationChain[], fpsLogin);
 route.post("/add", authFPSMiddleware); // fair price shop register route
 
 export default route;
