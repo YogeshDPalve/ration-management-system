@@ -24,7 +24,7 @@ export const authAdminMiddleware = async (
         message: "Invalid token",
       });
     }
-    const email: string = verify.email as string;
+    const email: string = verify.data as string;
 
     const checkAdmin = await prisma.admin.findUnique({ where: { email } });
     if (!checkAdmin) {
@@ -34,11 +34,11 @@ export const authAdminMiddleware = async (
       });
     }
 
-    // next();
-    return res.status(200).send({
-      success: true,
-      message: "Admin verified successfully",
-    });
+    next();
+    // return res.status(200).send({
+    //   success: true,
+    //   message: "Admin verified successfully",
+    // });
   } catch (error) {
     console.log(error);
     return res.status(500).send({

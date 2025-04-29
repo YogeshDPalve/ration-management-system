@@ -78,16 +78,16 @@ export const generateOtpToken = async (
   }
 };
 
-// ! Admin
+// ! Admin / FPS
 export const generateAdminToken = async (
-  adminEmail: string,
+  data: any,
   res: Response
 ): Promise<any> => {
   try {
     const jwtSecret = process.env.JWT_SECRET as string;
 
     // generate token
-    let token = jwt.sign({ email: adminEmail }, jwtSecret, {
+    let token = jwt.sign({ data }, jwtSecret, {
       expiresIn: "1d",
     });
 
@@ -112,3 +112,4 @@ export const generateAdminToken = async (
     });
   }
 };
+ 
