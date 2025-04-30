@@ -4,7 +4,7 @@ import {
   authUserMiddleware,
 } from "../Middlewares/authMiddleware";
 import { allotRation, purchaseRation } from "../Controllers/ration.controller";
-import { rationAllotmentValidation } from "../Middlewares/rationValidatoins";
+import { rationAllotmentValidation } from "../validations/rationValidatoins";
 import { ValidationChain } from "express-validator";
 import { validateGrainPurchase } from "../Middlewares/validateGrainPurchase";
 import {

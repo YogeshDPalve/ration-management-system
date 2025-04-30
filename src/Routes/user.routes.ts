@@ -14,7 +14,7 @@ import {
   loginValidation,
   rationIdValidation,
   registerValidation,
-} from "../Middlewares/userValidatoin";
+} from "../validations/userValidatoin";
 import { ValidationChain } from "express-validator";
 import checkUnique from "../Middlewares/checkUniqueFields";
 import {

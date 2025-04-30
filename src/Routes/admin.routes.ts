@@ -4,7 +4,7 @@ import { authAdminMiddleware } from "../Middlewares/authAdminMiddleware";
 import {
   validateAdminLogin,
   validateAdminRegistration,
-} from "../Middlewares/adminValidationsMiddlware";
+} from "../validations/adminValidationsMiddlware";
 import { ValidationChain } from "express-validator";
 
 const route = Router();

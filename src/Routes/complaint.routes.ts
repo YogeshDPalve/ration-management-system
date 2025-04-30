@@ -7,7 +7,7 @@ import {
 import {
   complaintValidation,
   FeedbackValidation,
-} from "../Middlewares/userValidatoin";
+} from "../validations/userValidatoin";
 import { ValidationChain } from "express-validator";
 import { feedback, postComplaint } from "../Controllers/complaint.controller";
 import path from "path";
