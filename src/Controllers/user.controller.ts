@@ -295,7 +295,14 @@ const logoutUser = async (req: Request, res: Response): Promise<any> => {
 const getUserInfo = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const rationId: string = req.params?.rationId as string;
-    
+    const userData = await redis.get(`user:${rationId}`);
+    if (userData) {
+      return res.status(200).send({
+        success: true,
+        message: "User info get successfully",
+        userInfo: JSON.parse(userData),
+      });
+    }
     const userInfo = await prisma.user.findUnique({
       where: { rationId },
       select: {
@@ -328,10 +335,44 @@ const getUserInfo = async (req: AuthRequest, res: Response): Promise<any> => {
       });
     }
 
-    const userData = await redis.set(
-      `user:${userInfo.rationId}`,
-      `${JSON.stringify(userInfo)}`
-    );
+    // cache data to redis with ration id key
+    const prefix = `${rationId}`;
+
+    // Define each section and store individually
+    const sectionsToStore = {
+      RationAllotment: userInfo.RationAllotment,
+      AllotmentHistory: userInfo.AllotmentHistory,
+      Complaint: userInfo.Complaint,
+      Feedback: userInfo.Feedback,
+      FamilyMembers: userInfo.FamilyMembers,
+      FPSTransaction: userInfo.FPSTransaction,
+      PurchaseHistory: userInfo.PurchaseHistory,
+      RationNotifications: userInfo.RationNotifications,
+      BasicInfo: {
+        rationId: userInfo.rationId,
+        adharcardNumber: userInfo.adharcardNumber,
+        firstName: userInfo.firstName,
+        middleName: userInfo.middleName,
+        lastName: userInfo.lastName,
+        mobileNo: userInfo.mobileNo,
+        email: userInfo.email,
+        address: userInfo.address,
+        fairPriceShopNumber: userInfo.fairPriceShopNumber,
+        createdAt: userInfo.createdAt,
+        updatedAt: userInfo.updatedAt,
+      },
+    };
+
+    try {
+      for (const [key, value] of Object.entries(sectionsToStore)) {
+        const redisKey = `${prefix}:${key}`;
+        await redis.set(redisKey, JSON.stringify(value));
+      }
+      console.log(`User data stored in Redis under prefix ${prefix}:`);
+    } catch (error) {
+      console.error("Error storing namespaced user data in Redis:", error);
+    }
+    // await redis.set(`user:${userInfo.rationId}`, `${JSON.stringify(userInfo)}`);
 
     return res.status(200).send({
       success: true,

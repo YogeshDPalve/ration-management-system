@@ -12,7 +12,7 @@ export type NotificationsData = {
   type: string;
   message: string;
 };
-
+export type RationId = Pick<NotificationsData, "rationId">;
 export type GrainsLimit = {
   wheatQuota: number;
   riceQuota: number;

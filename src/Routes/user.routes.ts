@@ -56,8 +56,7 @@ route.put(
 );
 route.get(
   "/get-user-info/:rationId",
-  authUserMiddleware,
-  authOtpMiddleare,
+ 
   getUserInfo
 );
 
