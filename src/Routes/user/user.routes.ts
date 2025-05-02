@@ -7,6 +7,11 @@ import {
 
 const route = Router();
 
-route.get("/notification", getAllNotifications);
+route.get(
+  "/notification",
+  authOtpMiddleare,
+  authUserMiddleware,
+  getAllNotifications
+);
 
 export default route;
