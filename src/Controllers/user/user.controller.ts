@@ -18,13 +18,14 @@ export const getAllNotifications = async (
       });
     }
     const id: string = rationId as string;
-    const redisNotification = (await redis.get(`user:${rationId}`)) || "";
-    const JsonRedis = JSON.parse(redisNotification);
-    if (JsonRedis) {
+    const RationNotifications =
+      (await redis.get(`${rationId}:RationNotifications`)) || "";
+
+    if (RationNotifications) {
       return res.status(200).send({
         success: true,
         message: "Notifications get successfully",
-        notification: JsonRedis.RationNotifications,
+        notification: JSON.parse(RationNotifications),
       });
     }
 
