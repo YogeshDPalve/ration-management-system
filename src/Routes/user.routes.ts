@@ -54,6 +54,11 @@ route.put(
   addResetOtpValidation as ValidationChain[],
   verifyResetOtp
 );
-route.get("/get-user-info", authUserMiddleware, authOtpMiddleare, getUserInfo);
+route.get(
+  "/get-user-info/:rationId",
+  authUserMiddleware,
+  authOtpMiddleare,
+  getUserInfo
+);
 
 export default route;

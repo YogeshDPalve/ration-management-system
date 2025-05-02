@@ -77,8 +77,13 @@ export const adminLogin = async (req: Request, res: Response): Promise<any> => {
         message: "Incorrect email or password",
       });
     }
+    const adminData = {
+      name: admin.name,
+      email: admin.email,
+      role: admin.role,
+    };
     // generate jwt token for admin
-    generateAdminToken(email, res);
+    generateAdminToken(adminData, res);
   } catch (error) {
     console.log(error);
     return res.status(500).send({

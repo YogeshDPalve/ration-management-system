@@ -12,6 +12,7 @@ import {
 import { generateOtpToken, generateToken } from "../Utils/generateToken";
 import redis from "../Utils/redis";
 import sendOtp from "../Utils/twilio";
+import { stringify } from "querystring";
 
 // prisma initiation
 const prisma = new PrismaClient();
@@ -264,8 +265,17 @@ const verifyResetOtp = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
-const logoutUser = (_: Request, res: Response): any => {
+const logoutUser = async (req: Request, res: Response): Promise<any> => {
   try {
+    const { rationId } = req.query;
+    console.log(rationId);
+    const del = await redis.del(`user:${rationId}`);
+    if (!del) {
+      return res.status(500).send({
+        success: false,
+        message: "Unable to logout",
+      });
+    }
     return res
       .cookie("token", "", { maxAge: 0 })
       .cookie("verifiedOtp", "", { maxAge: 0 })
@@ -284,8 +294,8 @@ const logoutUser = (_: Request, res: Response): any => {
 
 const getUserInfo = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const rationId: string = req.info?.rationId as string;
-
+    const rationId: string = req.params?.rationId as string;
+    
     const userInfo = await prisma.user.findUnique({
       where: { rationId },
       select: {
@@ -298,6 +308,14 @@ const getUserInfo = async (req: AuthRequest, res: Response): Promise<any> => {
         email: true,
         address: true,
         fairPriceShopNumber: true,
+        RationAllotment: true,
+        AllotmentHistory: true,
+        Complaint: true,
+        Feedback: true,
+        FamilyMembers: true,
+        FPSTransaction: true,
+        PurchaseHistory: true,
+        RationNotifications: true,
         createdAt: true,
         updatedAt: true,
         // password is intentionally excluded
@@ -309,6 +327,11 @@ const getUserInfo = async (req: AuthRequest, res: Response): Promise<any> => {
         message: "User not found",
       });
     }
+
+    const userData = await redis.set(
+      `user:${userInfo.rationId}`,
+      `${JSON.stringify(userInfo)}`
+    );
 
     return res.status(200).send({
       success: true,

@@ -80,7 +80,7 @@ export const generateOtpToken = async (
 
 // ! Admin / FPS
 export const generateAdminToken = async (
-  data: number | string,
+  data: any,
   res: Response
 ): Promise<any> => {
   try {
@@ -103,6 +103,7 @@ export const generateAdminToken = async (
         success: true,
         message: "Login successfull.",
         token,
+        data,
       });
   } catch (error) {
     return res.status(500).send({
