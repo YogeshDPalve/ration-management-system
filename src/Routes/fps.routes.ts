@@ -4,7 +4,7 @@ import { authFPSMiddleware } from "../Middlewares/authAdminMiddleware";
 import {
   validateFPSLogin,
   validateFPSRegistration,
-} from "../Middlewares/adminValidationsMiddlware";
+} from "../validations/adminValidationsMiddlware";
 import { ValidationChain } from "express-validator";
 
 const route = Router();

@@ -14,7 +14,7 @@ import {
   loginValidation,
   rationIdValidation,
   registerValidation,
-} from "../Middlewares/userValidatoin";
+} from "../validations/userValidatoin";
 import { ValidationChain } from "express-validator";
 import checkUnique from "../Middlewares/checkUniqueFields";
 import {
@@ -54,6 +54,10 @@ route.put(
   addResetOtpValidation as ValidationChain[],
   verifyResetOtp
 );
-route.get("/get-user-info", authUserMiddleware, authOtpMiddleare, getUserInfo);
+route.get(
+  "/get-user-info/:rationId",
+ 
+  getUserInfo
+);
 
 export default route;

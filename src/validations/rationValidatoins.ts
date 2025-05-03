@@ -2,18 +2,14 @@ import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 
 export const rationAllotmentValidation = [
+  body("allottedBy").notEmpty().withMessage("Admin email id is required"),
+
   body("rationId")
     .notEmpty()
     .isString()
     .withMessage("Ration ID is required")
     .isLength({ min: 6 })
     .withMessage("Ration ID must be at least 6 characters long"),
-
-  // body("adminEmail")
-  //   .isEmail()
-  //   .notEmpty()
-  //   .isString()
-  //   .withMessage("Admin email is required"),
 
   body("wheatQuota")
     .notEmpty()

@@ -5,12 +5,13 @@ import chalk from "chalk";
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import userRoutes from "./Routes/user.routes";
+import userAuthRoutes from "./Routes/user.routes";
 import familyRoutes from "./Routes/family.routes";
 import complaintRoutes from "./Routes/complaint.routes";
 import rationRoutes from "./Routes/ration.routes";
 import fpsRoutes from "./Routes/fps.routes";
 import adminRoutes from "./Routes/admin.routes";
+import userRoutes from "./Routes/user/user.routes";
 // configure dotenv
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 
 // generating routes
+app.use("/api/v1/user", userAuthRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/family-member", familyRoutes);
 app.use("/api/v1/report", complaintRoutes);

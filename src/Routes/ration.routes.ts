@@ -4,22 +4,26 @@ import {
   authUserMiddleware,
 } from "../Middlewares/authMiddleware";
 import { allotRation, purchaseRation } from "../Controllers/ration.controller";
-import { rationAllotmentValidation } from "../Middlewares/rationValidatoins";
+import { rationAllotmentValidation } from "../validations/rationValidatoins";
 import { ValidationChain } from "express-validator";
 import { validateGrainPurchase } from "../Middlewares/validateGrainPurchase";
+import {
+  authAdminMiddleware,
+  authFPSMiddleware,
+} from "../Middlewares/authAdminMiddleware";
 // import { purchaseRation } from "../Controllers/ration.controller";
-const route = Router();
+const route = Router(); 
 
 route.get("/get-ration-details", authUserMiddleware, authOtpMiddleare);
 route.post(
   "/purchase-ration",
-  authUserMiddleware,
-  authOtpMiddleare,
+  authFPSMiddleware,
   validateGrainPurchase,
   purchaseRation
 );
 route.post(
   "/ration-allocation",
+  authAdminMiddleware,
   rationAllotmentValidation as ValidationChain[],
   allotRation
 );

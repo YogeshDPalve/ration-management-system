@@ -5,7 +5,7 @@ import {
 } from "../Middlewares/authMiddleware";
 
 import { addFamilyMember } from "../Controllers/family.controller";
-import { addFamilyMemberValidation } from "../Middlewares/userValidatoin";
+import { addFamilyMemberValidation } from "../validations/userValidatoin";
 import { ValidationChain } from "express-validator";
 const route = Router();
 
