@@ -295,12 +295,10 @@ const logoutUser = async (req: Request, res: Response): Promise<any> => {
 const getUserInfo = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const rationId: string = req.params?.rationId as string;
-    const userData = await redis.get(`user:${rationId}`);
-    if (userData) {
-      return res.status(200).send({
-        success: true,
-        message: "User info get successfully",
-        userInfo: JSON.parse(userData),
+    if (!rationId) {
+      return res.status(400).send({
+        success: false,
+        message: "ration id not found",
       });
     }
     const userInfo = await prisma.user.findUnique({
