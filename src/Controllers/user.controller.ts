@@ -268,7 +268,6 @@ const verifyResetOtp = async (req: Request, res: Response): Promise<any> => {
 const logoutUser = async (req: Request, res: Response): Promise<any> => {
   try {
     const { rationId } = req.query;
-    console.log(rationId);
     const del = await redis.del(`user:${rationId}`);
     if (!del) {
       return res.status(500).send({
@@ -370,7 +369,6 @@ const getUserInfo = async (req: AuthRequest, res: Response): Promise<any> => {
     } catch (error) {
       console.error("Error storing namespaced user data in Redis:", error);
     }
-    // await redis.set(`user:${userInfo.rationId}`, `${JSON.stringify(userInfo)}`);
 
     return res.status(200).send({
       success: true,
