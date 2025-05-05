@@ -56,7 +56,6 @@ route.put(
 );
 route.get(
   "/get-user-info/:rationId",
- 
   getUserInfo
 );
 

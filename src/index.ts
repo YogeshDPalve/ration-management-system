@@ -11,7 +11,7 @@ import complaintRoutes from "./Routes/complaint.routes";
 import rationRoutes from "./Routes/ration.routes";
 import fpsRoutes from "./Routes/fps.routes";
 import adminRoutes from "./Routes/admin.routes";
-import userRoutes from "./Routes/user/user.routes";
+import userRoutes from "./Routes/user/index";
 // configure dotenv
 dotenv.config();
 
