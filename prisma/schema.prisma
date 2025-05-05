@@ -50,6 +50,9 @@ model User {
   FPSTransaction      FPSTransaction[]
   Feedback            Feedback[]
   AllotmentHistory    AllotmentHistory[]
+
+  // indexing
+  @@index([rationId])
 }
 
 model FamilyMembers {
@@ -61,6 +64,8 @@ model FamilyMembers {
   gender    Gender?
   rationId  String  @map("ration_id")
   user      User    @relation(fields: [rationId], references: [rationId])
+
+  @@index([rationId])
 }
 
 model RationAllotment {
@@ -81,6 +86,8 @@ model RationAllotment {
 
   // Relation with User
   user User @relation(fields: [rationId], references: [rationId])
+
+  @@index([rationId, id])
 }
 
 model AllotmentHistory {
@@ -96,6 +103,8 @@ model AllotmentHistory {
 
   // Relation with the User model
   user User @relation(fields: [rationId], references: [rationId])
+
+  @@index([rationId, id])
 }
 
 model RationNotification {
@@ -108,6 +117,8 @@ model RationNotification {
 
   // Relation with User
   user User @relation(fields: [rationId], references: [rationId])
+
+  @@index([rationId, id])
 }
 
 model PurchaseHistory {
@@ -123,6 +134,8 @@ model PurchaseHistory {
 
   // Relation with User
   user User @relation(fields: [rationId], references: [rationId])
+
+  @@index([rationId, id])
 }
 
 model Complaint {
@@ -142,6 +155,8 @@ model Complaint {
   user    User    @relation(fields: [rationId], references: [rationId])
   Admin   Admin?  @relation(fields: [adminId], references: [id])
   adminId String?
+
+  @@index([rationId])
 }
 
 model Feedback {
@@ -154,6 +169,8 @@ model Feedback {
   user       User     @relation(fields: [rationId], references: [rationId])
   Admin      Admin?   @relation(fields: [adminId], references: [id])
   adminId    String?
+
+  @@index([rationId])
 }
 
 model FairPriceShop {
@@ -190,6 +207,8 @@ model FPSTransaction {
   // Relations
   user User          @relation(fields: [rationId], references: [rationId])
   shop FairPriceShop @relation(fields: [shopNumber], references: [shopNumber])
+
+  @@index([rationId, shopNumber, id])
 }
 
 model GovernmentMonitoring {
@@ -232,4 +251,6 @@ model AdminLog {
   timestamp   DateTime @default(now())
 
   admin Admin @relation(fields: [adminId], references: [id])
+
+  @@index([adminId, id])
 }
