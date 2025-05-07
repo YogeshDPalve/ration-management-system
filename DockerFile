@@ -1,0 +1,17 @@
+FROM node:23-alpine3.20
+
+WORKDIR /src
+
+# COPY package.json .
+# COPY package-lock.json .
+COPY package*.json .
+
+RUN npm install
+
+COPY . .
+
+CMD [ "npm","run","dev " ]
+
+
+# docker build -t ration-system .
+# docker run -it -p 8080:8080 ration-system
